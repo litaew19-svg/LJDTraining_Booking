@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LJD Training | PT Booking Platform</title>
+    <!-- Google Fonts: Inter (English) & Noto Sans TC (Traditional Chinese) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Top Control Bar (Branding, Language, and Testing Role Switcher) -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <span class="brand-name">LJD <span class="brand-sub">TRAINING</span></span>
+            </div>
+        </div>
+        <div class="header-right">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <i class="fa-solid fa-globe lang-icon"></i>
+                <select id="lang-select" aria-label="Language Selector">
+                    <option value="en">English</option>
+                    <option value="zh-tw">繁體中文</option>
+                </select>
+            </div>
+
+            <!-- Testing Role Selector -->
+            <div class="role-selector">
+                <span class="role-label" id="text-role-label">View As:</span>
+                <div class="role-btn-group">
+                    <button class="role-btn active" data-role="student" id="btn-role-student">
+                        <i class="fa-solid fa-graduation-cap"></i> Student
+                    </button>
+                    <button class="role-btn" data-role="trainer" id="btn-role-trainer">
+                        <i class="fa-solid fa-dumbbell"></i> Trainer
+                    </button>
+                    <button class="role-btn" data-role="admin" id="btn-role-admin">
+                        <i class="fa-solid fa-user-gear"></i> Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+
+        <!-- ============================================ -->
+        <!-- STUDENT VIEW -->
+        <!-- ============================================ -->
+        <section id="view-student" class="view-section active">
+            <!-- Top Dashboard Stats -->
+            <div class="dashboard-grid">
+                <!-- Package Credits Card -->
+                <div class="dashboard-card credit-card">
+                    <div class="card-bg-gradient"></div>
+                    <div class="card-content">
+                        <div class="card-header-icon">
+                            <i class="fa-solid fa-ticket-simple"></i>
+                        </div>
+                        <h3 id="lbl-student-credits-title">Remaining Credits</h3>
+                        <div class="credit-display">
+                            <span class="credit-count" id="student-credits-value">0</span>
+                            <span class="credit-total" id="student-total-slots">/ 0</span>
+                        </div>
+                        <p class="credit-subtext" id="student-package-details">Package ID: P000</p>
+                    </div>
+                </div>
+
+                <!-- Next Session Card -->
+                <div class="dashboard-card status-card">
+                    <div class="card-content">
+                        <h3 id="lbl-next-session-title">Your Next Session</h3>
+                        <div id="next-session-container">
+                            <div class="no-session-msg" id="msg-no-upcoming">
+                                <i class="fa-regular fa-calendar-check"></i>
+                                <p id="lbl-no-upcoming-desc">No sessions booked yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Interactive Booking Section -->
+            <div class="content-layout">
+                <!-- Available Sessions List -->
+                <div class="main-content-column">
+                    <div class="section-header">
+                        <h2 id="lbl-available-sessions-title">Book a Training Session</h2>
+                        <div class="filter-bar">
+                            <button class="filter-btn active" data-filter="all" id="btn-filter-all">All</button>
+                            <button class="filter-btn" data-filter="1on1" id="btn-filter-1on1">1 on 1</button>
+                            <button class="filter-btn" data-filter="group" id="btn-filter-group">Group Class</button>
+                        </div>
+                    </div>
+                    <div class="sessions-grid" id="student-available-sessions-list">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- Student's Booked Sessions Sidebar -->
+                <aside class="sidebar-column">
+                    <h3 class="sidebar-title" id="lbl-my-bookings-title">My Bookings</h3>
+                    <div class="bookings-list" id="student-bookings-list">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+
+        <!-- ============================================ -->
+        <!-- TRAINER VIEW -->
+        <!-- ============================================ -->
+        <section id="view-trainer" class="view-section">
+            <div class="trainer-header">
+                <div class="trainer-info">
+                    <h2 id="lbl-trainer-title">Trainer Dashboard</h2>
+                    <p class="sub-heading" id="lbl-trainer-subtitle">Manage your schedule and view class participants
+                    </p>
+                </div>
+                <button class="btn btn-primary" id="btn-open-create-session">
+                    <i class="fa-solid fa-plus"></i> <span id="lbl-btn-create-session">Create Session</span>
+                </button>
+            </div>
+
+            <div class="content-layout">
+                <!-- Trainer Schedule List -->
+                <div class="main-content-column">
+                    <div class="section-header">
+                        <h3 id="lbl-my-schedule-title">My Teaching Schedule</h3>
+                    </div>
+                    <div class="schedule-grid" id="trainer-sessions-list">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- Calendar View Quick Summary -->
+                <aside class="sidebar-column">
+                    <div class="stats-summary-card">
+                        <h4 id="lbl-schedule-summary-title">Summary</h4>
+                        <div class="stat-row">
+                            <span id="lbl-stat-total-sessions">Total Sessions</span>
+                            <span class="stat-badge" id="trainer-stat-total">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span id="lbl-stat-1on1-sessions">1 on 1 Classes</span>
+                            <span class="stat-badge badge-blue" id="trainer-stat-1on1">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span id="lbl-stat-group-sessions">Group Classes</span>
+                            <span class="stat-badge badge-purple" id="trainer-stat-group">0</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+
+        <!-- ============================================ -->
+        <!-- ADMIN VIEW -->
+        <!-- ============================================ -->
+        <section id="view-admin" class="view-section">
+            <div class="admin-header">
+                <h2 id="lbl-admin-title">Admin Management Console</h2>
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="students" id="tab-students-btn">
+                        <i class="fa-solid fa-user-graduate"></i> <span id="lbl-tab-students">Students & Packages</span>
+                    </button>
+                    <button class="admin-tab" data-tab="sessions" id="tab-sessions-btn">
+                        <i class="fa-solid fa-calendar-days"></i> <span id="lbl-tab-sessions">All Sessions</span>
+                    </button>
+                    <button class="admin-tab" data-tab="export" id="tab-export-btn">
+                        <i class="fa-solid fa-download"></i> <span id="lbl-tab-export">Data Export</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Students & Packages Management -->
+            <div id="admin-tab-content-students" class="admin-tab-content active">
+                <div class="action-bar">
+                    <h3 id="lbl-manage-students-title">Manage Students</h3>
+                    <button class="btn btn-primary btn-sm" id="btn-open-create-user">
+                        <i class="fa-solid fa-plus"></i> <span id="lbl-btn-add-student">Add New Student</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th id="th-student-name">Name</th>
+                                <th id="th-student-email">Email</th>
+                                <th id="th-student-phone">Phone</th>
+                                <th id="th-student-role">Role</th>
+                                <th id="th-student-credits">Credits Remaining</th>
+                                <th id="th-student-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-students-table-body">
+                            <!-- Populated dynamically via app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Sessions Management -->
+            <div id="admin-tab-content-sessions" class="admin-tab-content">
+                <div class="action-bar">
+                    <h3 id="lbl-manage-sessions-title">Manage Sessions & Bookings</h3>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Session ID</th>
+                                <th id="th-session-trainer">Trainer ID</th>
+                                <th id="th-session-type">Type</th>
+                                <th id="th-session-capacity">Capacity</th>
+                                <th id="th-session-datetime">Date & Time</th>
+                                <th id="th-session-status">Status</th>
+                                <th id="th-session-bookings">Booked Students</th>
+                                <th id="th-session-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-sessions-table-body">
+                            <!-- Populated dynamically via app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Export & CSV Integration -->
+            <div id="admin-tab-content-export" class="admin-tab-content">
+                <div class="export-grid">
+                    <div class="export-card">
+                        <div class="export-icon"><i class="fa-solid fa-users"></i></div>
+                        <h4 id="lbl-export-users-title">1. Users Table (Google Sheet tab 1)</h4>
+                        <p id="lbl-export-users-desc">Contains all users, phone numbers, emails, and roles.</p>
+                        <button class="btn btn-secondary btn-export" data-table="users" id="btn-export-users">
+                            <i class="fa-solid fa-file-csv"></i> <span id="lbl-btn-export-users">Export CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="export-card">
+                        <div class="export-icon"><i class="fa-solid fa-clock"></i></div>
+                        <h4 id="lbl-export-sessions-title">2. Sessions Table (Google Sheet tab 2)</h4>
+                        <p id="lbl-export-sessions-desc">Contains list of sessions, capacity, status, dates, and times.
+                        </p>
+                        <button class="btn btn-secondary btn-export" data-table="sessions" id="btn-export-sessions">
+                            <i class="fa-solid fa-file-csv"></i> <span id="lbl-btn-export-sessions">Export CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="export-card">
+                        <div class="export-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h4 id="lbl-export-bookings-title">3. Bookings Table (Google Sheet tab 3)</h4>
+                        <p id="lbl-export-bookings-desc">Contains references between booked sessions and students.</p>
+                        <button class="btn btn-secondary btn-export" data-table="bookings" id="btn-export-bookings">
+                            <i class="fa-solid fa-file-csv"></i> <span id="lbl-btn-export-bookings">Export CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="export-card">
+                        <div class="export-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <h4 id="lbl-export-packages-title">4. Student Packages Table (Google Sheet tab 4)</h4>
+                        <p id="lbl-export-packages-desc">Contains purchased package limits and remaining credits.</p>
+                        <button class="btn btn-secondary btn-export" data-table="packages" id="btn-export-packages">
+                            <i class="fa-solid fa-file-csv"></i> <span id="lbl-btn-export-packages">Export CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="db-management-panel">
+                    <h3 id="lbl-db-mgmt-title">Database Utilities</h3>
+                    <div class="db-mgmt-actions">
+                        <button class="btn btn-danger" id="btn-db-reset">
+                            <i class="fa-solid fa-rotate-left"></i> <span id="lbl-btn-db-reset">Reset database to
+                                default sample data</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================ -->
+    <!-- MODALS & DIALOGS -->
+    <!-- ============================================ -->
+
+    <!-- Modal 1: Create Session (Trainer View) -->
+    <div class="modal-overlay" id="modal-create-session">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="lbl-create-session-modal-title">Create Class Session</h3>
+                <button class="btn-close" id="btn-close-create-session" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-create-session">
+                    <div class="form-group">
+                        <label for="session-trainer" id="lbl-form-trainer">Trainer</label>
+                        <select id="session-trainer" required>
+                            <!-- Trainer selection populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="session-class-type" id="lbl-form-class-type">Class Type</label>
+                        <select id="session-class-type" required>
+                            <option value="1 on 1">1 on 1</option>
+                            <option value="Group Class">Group Class (Max 3)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="session-capacity" id="lbl-form-capacity">Max Capacity</label>
+                        <input type="number" id="session-capacity" min="1" max="100" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="session-date" id="lbl-form-date">Date</label>
+                        <input type="date" id="session-date" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="session-start" id="lbl-form-start">Start Time</label>
+                            <input type="time" id="session-start" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-end" id="lbl-form-end">End Time</label>
+                            <input type="time" id="session-end" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-create-session">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="lbl-btn-submit-session">Save Session</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Session Participants Drawer (Trainer/Admin View) -->
+    <div class="modal-overlay" id="modal-participants">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><span id="lbl-participants-title">Participants List</span> <span class="session-tag"
+                        id="participant-session-id">S001</span></h3>
+                <button class="btn-close" id="btn-close-participants" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="session-info-card">
+                    <p><strong><i class="fa-solid fa-clock"></i> <span id="participant-session-time">Date &
+                                Time</span></strong></p>
+                    <p><strong><i class="fa-solid fa-user"></i> <span id="participant-session-type-lbl">Class
+                                Type</span></strong></p>
+                </div>
+                <div class="participants-list-container">
+                    <ul class="participants-ul" id="participants-list-ul">
+                        <!-- Populated dynamically via app.js -->
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-close-participants-footer">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add / Edit Student & Package (Admin View) -->
+    <div class="modal-overlay" id="modal-user">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="lbl-user-modal-title">Add New Student</h3>
+                <button class="btn-close" id="btn-close-user" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-user">
+                    <div class="form-group">
+                        <label for="user-name" id="lbl-form-user-name">Full Name</label>
+                        <input type="text" id="user-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-email" id="lbl-form-user-email">Email Address</label>
+                        <input type="email" id="user-email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-phone" id="lbl-form-user-phone">Phone Number</label>
+                        <input type="tel" id="user-phone" placeholder="081-234-5678" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-role" id="lbl-form-user-role">Role</label>
+                        <select id="user-role" required>
+                            <option value="Student">Student</option>
+                            <option value="Trainer">Trainer</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+
+                    <!-- Only visible / active when adding a student -->
+                    <div class="package-fields-group" id="package-fields">
+                        <hr class="form-divider">
+                        <h4 id="lbl-form-package-header">Training Package Setup</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="package-total" id="lbl-form-total-slots">Total Purchased Slots</label>
+                                <input type="number" id="package-total" min="0" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="package-remaining" id="lbl-form-remaining-slots">Remaining Slots</label>
+                                <input type="number" id="package-remaining" min="0" value="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-user">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="lbl-btn-submit-user">Save Member</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Edit Package Slots (Admin View Shortcut) -->
+    <div class="modal-overlay" id="modal-package-edit">
+        <div class="modal-container modal-sm">
+            <div class="modal-header">
+                <h3 id="lbl-pkg-modal-title">Adjust Student Package Credits</h3>
+                <button class="btn-close" id="btn-close-package-edit" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-package-edit">
+                    <input type="hidden" id="edit-pkg-student-id">
+                    <div class="form-group">
+                        <label id="lbl-pkg-student-name-display">Student Name</label>
+                        <div class="static-input-display" id="edit-pkg-student-name">Name</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-pkg-total" id="lbl-pkg-total">Total Purchased</label>
+                            <input type="number" id="edit-pkg-total" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-pkg-remaining" id="lbl-pkg-remaining">Remaining Slots</label>
+                            <input type="number" id="edit-pkg-remaining" min="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-package-edit">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="lbl-btn-submit-package-edit">Save
+                            Credits</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JS Application Scripts -->
+    <script src="app.js"></script>
+</body>
+
+</html>
