@@ -18,6 +18,55 @@
 </head>
 
 <body>
+    <!-- Authentication Overlay (Login / Register) -->
+    <div class="auth-overlay" id="auth-screen">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <i class="fa-solid fa-bolt auth-logo-icon"></i>
+                <span class="brand-name">LJD <span class="brand-sub">TRAINING</span></span>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login-btn">Login</button>
+                <button class="auth-tab" id="tab-register-btn">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="form-login" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-identifier" id="lbl-login-identifier">Email or Phone Number</label>
+                    <input type="text" id="login-identifier" placeholder="e.g. kanya@example.com" required autocomplete="username">
+                </div>
+                <button type="submit" class="btn btn-primary btn-auth" id="lbl-btn-login">Sign In</button>
+                <div class="auth-help">
+                    <p id="lbl-demo-accounts">Demo Accounts:</p>
+                    <ul>
+                        <li>Admin: <code>phatcharin@example.com</code></li>
+                        <li>Trainer: <code>somchai.pt@example.com</code></li>
+                        <li>Student: <code>kanya@example.com</code></li>
+                    </ul>
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="form-register" class="auth-form">
+                <div class="form-group">
+                    <label for="register-name" id="lbl-reg-name">Full Name</label>
+                    <input type="text" id="register-name" placeholder="John Doe" required autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="register-email" id="lbl-reg-email">Email Address</label>
+                    <input type="email" id="register-email" placeholder="john@example.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="register-phone" id="lbl-reg-phone">Phone Number</label>
+                    <input type="tel" id="register-phone" placeholder="081-234-5678" required autocomplete="tel">
+                </div>
+                <button type="submit" class="btn btn-primary btn-auth" id="lbl-btn-register">Create Account</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Top Control Bar (Branding, Language, and Testing Role Switcher) -->
     <header class="app-header">
         <div class="header-left">
@@ -27,6 +76,12 @@
             </div>
         </div>
         <div class="header-right">
+            <!-- Logged-in User Profile & Logout -->
+            <div class="user-status-info" id="user-status-box" style="display: none;">
+                <span class="user-welcome"><i class="fa-solid fa-circle-user"></i> <span id="user-display-name">Guest</span></span>
+                <button class="btn-logout" id="btn-logout" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+
             <!-- Language Selector -->
             <div class="language-selector">
                 <i class="fa-solid fa-globe lang-icon"></i>
@@ -36,8 +91,8 @@
                 </select>
             </div>
 
-            <!-- Testing Role Selector -->
-            <div class="role-selector">
+            <!-- Testing Role Selector (Visible only to Admin) -->
+            <div class="role-selector" id="admin-role-switcher" style="display: none;">
                 <span class="role-label" id="text-role-label">View As:</span>
                 <div class="role-btn-group">
                     <button class="role-btn active" data-role="student" id="btn-role-student">
@@ -54,7 +109,7 @@
         </div>
     </header>
 
-    <main class="app-container">
+    <main class="app-container" id="main-app-container" style="display: none;">
 
         <!-- ============================================ -->
         <!-- STUDENT VIEW -->
@@ -96,6 +151,26 @@
             <div class="content-layout">
                 <!-- Available Sessions List -->
                 <div class="main-content-column">
+                    <!-- Monthly Calendar Widget -->
+                    <div class="calendar-section">
+                        <div class="calendar-header-bar">
+                            <h3 id="lbl-student-calendar-title">Monthly Class Calendar</h3>
+                            <div class="calendar-nav-buttons">
+                                <button class="btn-cal-nav" id="btn-student-cal-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                                <span class="calendar-month-year" id="student-cal-month-year">July 2026</span>
+                                <button class="btn-cal-nav" id="btn-student-cal-next"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item"><span class="legend-dot dot-available"></span> <span id="lbl-legend-available">Available Class</span></span>
+                            <span class="legend-item"><span class="legend-dot dot-booked"></span> <span id="lbl-legend-booked">Your Booking</span></span>
+                            <span class="legend-item"><span class="legend-dot dot-selected"></span> <span id="lbl-legend-selected">Selected Day</span></span>
+                        </div>
+                        <div class="calendar-grid-container" id="student-calendar-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
                     <div class="section-header">
                         <h2 id="lbl-available-sessions-title">Book a Training Session</h2>
                         <div class="filter-bar">
@@ -138,6 +213,25 @@
             <div class="content-layout">
                 <!-- Trainer Schedule List -->
                 <div class="main-content-column">
+                    <!-- Monthly Calendar Widget for Trainer -->
+                    <div class="calendar-section">
+                        <div class="calendar-header-bar">
+                            <h3 id="lbl-trainer-calendar-title">Monthly Teaching Calendar</h3>
+                            <div class="calendar-nav-buttons">
+                                <button class="btn-cal-nav" id="btn-trainer-cal-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                                <span class="calendar-month-year" id="trainer-cal-month-year">July 2026</span>
+                                <button class="btn-cal-nav" id="btn-trainer-cal-next"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item"><span class="legend-dot dot-booked"></span> <span id="lbl-legend-teaching">Teaching Day</span></span>
+                            <span class="legend-item"><span class="legend-dot dot-selected"></span> <span id="lbl-legend-trainer-selected">Selected Day</span></span>
+                        </div>
+                        <div class="calendar-grid-container" id="trainer-calendar-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
                     <div class="section-header">
                         <h3 id="lbl-my-schedule-title">My Teaching Schedule</h3>
                     </div>
@@ -183,6 +277,9 @@
                     </button>
                     <button class="admin-tab" data-tab="export" id="tab-export-btn">
                         <i class="fa-solid fa-download"></i> <span id="lbl-tab-export">Data Export</span>
+                    </button>
+                    <button class="admin-tab" data-tab="settings" id="tab-settings-btn">
+                        <i class="fa-solid fa-sliders"></i> <span id="lbl-tab-settings">Settings</span>
                     </button>
                 </div>
             </div>
@@ -290,6 +387,56 @@
                                 default sample data</span>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Package & Pricing Settings -->
+            <div id="admin-tab-content-settings" class="admin-tab-content">
+                <div class="settings-container-box">
+                    <h3 id="lbl-settings-title">Package & Pricing Settings</h3>
+                    <p class="sub-heading" id="lbl-settings-subtitle">Manage class rates, pricing packages, and session rules.</p>
+                    
+                    <form id="form-pricing-settings">
+                        <div class="settings-group-card">
+                            <h4 id="lbl-settings-group-class-title"><i class="fa-solid fa-users"></i> Group Class Settings</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="settings-group-trial" id="lbl-set-group-trial">First Trial Price (NT)</label>
+                                    <input type="number" id="settings-group-trial" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-group-normal" id="lbl-set-group-normal">Normal Class Price (NT)</label>
+                                    <input type="number" id="settings-group-normal" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-group-min-users" id="lbl-set-group-min">Min Participants to Start</label>
+                                    <input type="number" id="settings-group-min-users" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-group-card" style="margin-top: 1.5rem;">
+                            <h4 id="lbl-settings-pt-title"><i class="fa-solid fa-dumbbell"></i> 1-on-1 PT Pricing Packages</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="settings-pt-1" id="lbl-set-pt-1">1 Class Package Price (NT)</label>
+                                    <input type="number" id="settings-pt-1" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-pt-10" id="lbl-set-pt-10">10 Classes Package Price / Class (NT)</label>
+                                    <input type="number" id="settings-pt-10" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-pt-20" id="lbl-set-pt-20">20 Classes Package Price / Class (NT)</label>
+                                    <input type="number" id="settings-pt-20" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-footer" style="margin-top: 2rem;">
+                            <button type="submit" class="btn btn-primary" style="width: auto; padding: 0.75rem 2.5rem;" id="lbl-btn-save-settings">Save Settings</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>

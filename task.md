@@ -1,0 +1,11 @@
+- `[x]` Define and initialize database settings (LJD_pt_settings) in app.js
+- `[x]` Create Login/Registration UI in index.html (Auth screen) and adjust header (logout button)
+- `[x]` Create CSS styling in styles.css (Auth overlay, monthly calendar, and Admin settings page)
+- `[x]` Implement authentication logic in app.js (registration, login, logout, and session check)
+- `[x]` Update Student view: only display 1-on-1 Credits (Group Class is unlimited)
+- `[x]` Implement Group Class booking (unlimited) and 1-on-1 booking (requires 1-on-1 credits)
+- `[x]` Implement 24-hour advance cancellation rule check for bookings
+- `[x]` Implement Group Class participant count status (Pending if < 2, Confirmed if >= 2)
+- `[x]` Create Admin settings tab in index.html and app.js to edit pricing and conditions
+- `[x]` Implement Interactive Monthly Calendar UI for Student and Trainer views (with date filtering)
+- `[x]` Verify implementation using browser subagent

@@ -114,7 +114,45 @@ const translations = {
         statusFull: "Full",
         statusFinished: "Finished",
         statusConfirmed: "Confirmed",
-        statusCancelled: "Cancelled"
+        statusCancelled: "Cancelled",
+
+        // Login & Registration
+        loginIdentifier: "Email or Phone Number",
+        btnSignIn: "Sign In",
+        demoAccounts: "Demo Accounts:",
+        regName: "Full Name",
+        regEmail: "Email Address",
+        regPhone: "Phone Number",
+        btnCreateAccount: "Create Account",
+        loginSuccess: "Successfully logged in!",
+        loginFailed: "User not found. Please register or verify spelling!",
+        logoutSuccess: "Logged out successfully.",
+        invalidEmail: "Please enter a valid email or phone number!",
+
+        // Settings tab & Pricing
+        tabSettings: "Settings",
+        settingsTitle: "Package & Pricing Settings",
+        settingsSubtitle: "Manage class rates, pricing packages, and session rules.",
+        settingsGroupClassTitle: "Group Class Settings",
+        settingsPtTitle: "1-on-1 PT Pricing Packages",
+        setGroupTrial: "First Trial Price (NT)",
+        setGroupNormal: "Normal Class Price (NT)",
+        setGroupMin: "Min Participants to Start",
+        setPt1: "1 Class Package Price (NT)",
+        setPt10: "10 Classes Package Price / Class (NT)",
+        setPt20: "20 Classes Package Price / Class (NT)",
+        btnSaveSettings: "Save Settings",
+        settingsUpdatedSuccess: "Pricing settings updated successfully!",
+
+        // Calendar & Legend
+        studentCalendarTitle: "Monthly Class Calendar",
+        trainerCalendarTitle: "Monthly Teaching Calendar",
+        legendAvailable: "Available Class",
+        legendBooked: "Your Booking",
+        legendSelected: "Selected Day",
+        legendTeaching: "Teaching Day",
+        legendTrainerSelected: "Selected Day",
+        cancellation24hError: "You can only cancel bookings at least 24 hours in advance!"
     },
     "zh-tw": {
         appName: "LJD 訓練中心",
@@ -223,7 +261,45 @@ const translations = {
         statusFull: "已額滿 (Full)",
         statusFinished: "已結束 (Finished)",
         statusConfirmed: "預約確認 (Confirmed)",
-        statusCancelled: "已取消 (Cancelled)"
+        statusCancelled: "已取消 (Cancelled)",
+
+        // Login & Registration
+        loginIdentifier: "電子信箱或手機號碼",
+        btnSignIn: "登入",
+        demoAccounts: "示範帳號：",
+        regName: "真實姓名",
+        regEmail: "電子信箱",
+        regPhone: "聯絡電話",
+        btnCreateAccount: "註冊學員帳號",
+        loginSuccess: "登入成功！",
+        loginFailed: "找不到用戶，請檢查輸入或進行註冊！",
+        logoutSuccess: "已成功登出。",
+        invalidEmail: "請輸入有效的信箱或電話！",
+
+        // Settings tab & Pricing
+        tabSettings: "設定",
+        settingsTitle: "方案與定價設定",
+        settingsSubtitle: "管理課堂費率、定價方案與排課規則。",
+        settingsGroupClassTitle: "團體課設定",
+        settingsPtTitle: "1-on-1 PT 私人課定價方案",
+        setGroupTrial: "首次體驗價 (NT)",
+        setGroupNormal: "一般單堂價 (NT)",
+        setGroupMin: "最少開課人數",
+        setPt1: "1 堂私人課單價 (NT)",
+        setPt10: "10 堂私人課 package 單價 (NT)",
+        setPt20: "20 堂私人課 package 單價 (NT)",
+        btnSaveSettings: "儲存設定",
+        settingsUpdatedSuccess: "費率設定已成功更新！",
+
+        // Calendar & Legend
+        studentCalendarTitle: "每月課程行事曆",
+        trainerCalendarTitle: "每月授課行事曆",
+        legendAvailable: "可預約課程",
+        legendBooked: "已預約課程",
+        legendSelected: "選取日期",
+        legendTeaching: "授課日",
+        legendTrainerSelected: "選取日期",
+        cancellation24hError: "必須在開課 1 天（24 小時）前取消預約！"
     }
 };
 
@@ -260,15 +336,27 @@ const defaultPackages = [
 let state = {
     language: "en",
     role: "student",
-    currentStudentId: "U003", // Default active student when in Student view
+    currentUser: null, // Logged in user object
+    currentStudentId: "", // Sets dynamically when logged in as student
     currentTrainerId: "U002", // Default active trainer when in Trainer view
     activeAdminTab: "students",
-    filterStudentSessions: "all"
+    filterStudentSessions: "all",
+    calendarDate: new Date(), // Selected month in calendar
+    selectedDateStr: "" // Filter sessions list by specific date (e.g. "2026-07-10")
 };
 
 // ==========================================
 // 4. DATABASE SERVICE (localStorage layer)
 // ==========================================
+const defaultSettings = {
+    Group_Trial_Price: 300,
+    Group_Normal_Price: 600,
+    Group_Min_Participants: 2,
+    PT_Price_1: 1800,
+    PT_Price_10: 1450,
+    PT_Price_20: 1350
+};
+
 const db = {
     get: (key) => JSON.parse(localStorage.getItem(`LJD_pt_${key}`)),
     set: (key, data) => localStorage.setItem(`LJD_pt_${key}`, JSON.stringify(data)),
@@ -279,6 +367,10 @@ const db = {
             db.set("sessions", defaultSessions);
             db.set("bookings", defaultBookings);
             db.set("packages", defaultPackages);
+            db.set("settings", defaultSettings);
+        }
+        if (!localStorage.getItem("LJD_pt_settings")) {
+            db.set("settings", defaultSettings);
         }
     },
 
@@ -303,11 +395,34 @@ const db = {
         list: () => db.get("packages") || [],
         save: (list) => db.set("packages", list),
         getByStudent: (studentId) => db.packages.list().find(p => p.Student_ID === studentId)
+    },
+    settings: {
+        get: () => db.get("settings") || defaultSettings,
+        save: (data) => db.set("settings", data)
     }
 };
 
 // Initialize DB
 db.init();
+
+// Restore Session if it exists
+(function restoreSession() {
+    const savedUser = localStorage.getItem("LJD_pt_logged_in_user");
+    if (savedUser) {
+        try {
+            state.currentUser = JSON.parse(savedUser);
+            state.role = state.currentUser.Role.toLowerCase();
+            if (state.role === "student") {
+                state.currentStudentId = state.currentUser.User_ID;
+            } else if (state.role === "trainer") {
+                state.currentTrainerId = state.currentUser.User_ID;
+            }
+        } catch (e) {
+            console.error("Session restore failed", e);
+            localStorage.removeItem("LJD_pt_logged_in_user");
+        }
+    }
+})();
 
 // ==========================================
 // 5. HELPER FUNCTIONS & UI UTILITIES
@@ -360,7 +475,37 @@ function formatDateDisplay(dateStr) {
 // ==========================================
 // 6. LANGUAGE RENDERING ENGINE
 // ==========================================
+function checkAuthUI() {
+    const authScreen = document.getElementById("auth-screen");
+    const mainAppContainer = document.getElementById("main-app-container");
+    const userStatusBox = document.getElementById("user-status-box");
+    const adminRoleSwitcher = document.getElementById("admin-role-switcher");
+
+    if (state.currentUser) {
+        authScreen.style.display = "none";
+        mainAppContainer.style.display = "block";
+        userStatusBox.style.display = "flex";
+        
+        let roleLabelText = getT(state.currentUser.Role.toLowerCase());
+        document.getElementById("user-display-name").textContent = `${state.currentUser.Name} (${roleLabelText})`;
+
+        if (state.currentUser.Role === "Admin") {
+            adminRoleSwitcher.style.display = "flex";
+        } else {
+            adminRoleSwitcher.style.display = "none";
+        }
+    } else {
+        authScreen.style.display = "flex";
+        mainAppContainer.style.display = "none";
+        userStatusBox.style.display = "none";
+        adminRoleSwitcher.style.display = "none";
+    }
+}
+
 function applyLanguage() {
+    // Run authentication UI check first
+    checkAuthUI();
+
     // Top layout
     document.getElementById("text-role-label").textContent = getT("viewAs");
 
@@ -368,6 +513,15 @@ function applyLanguage() {
     document.getElementById("btn-role-student").innerHTML = `<i class="fa-solid fa-graduation-cap"></i> ${getT("student")}`;
     document.getElementById("btn-role-trainer").innerHTML = `<i class="fa-solid fa-dumbbell"></i> ${getT("trainer")}`;
     document.getElementById("btn-role-admin").innerHTML = `<i class="fa-solid fa-user-gear"></i> ${getT("admin")}`;
+
+    // Login Overlay Elements
+    document.getElementById("lbl-login-identifier").textContent = getT("loginIdentifier");
+    document.getElementById("lbl-btn-login").textContent = getT("btnSignIn");
+    document.getElementById("lbl-demo-accounts").textContent = getT("demoAccounts");
+    document.getElementById("lbl-reg-name").textContent = getT("regName");
+    document.getElementById("lbl-reg-email").textContent = getT("regEmail");
+    document.getElementById("lbl-reg-phone").textContent = getT("regPhone");
+    document.getElementById("lbl-btn-register").textContent = getT("btnCreateAccount");
 
     // Student labels
     document.getElementById("lbl-student-credits-title").textContent = getT("remainingCredits");
@@ -377,6 +531,12 @@ function applyLanguage() {
     document.getElementById("btn-filter-1on1").textContent = getT("oneOnOne");
     document.getElementById("btn-filter-group").textContent = getT("groupClass");
     document.getElementById("lbl-my-bookings-title").textContent = getT("myBookings");
+
+    // Student Calendar Legend
+    document.getElementById("lbl-student-calendar-title").textContent = getT("studentCalendarTitle");
+    document.getElementById("lbl-legend-available").textContent = getT("legendAvailable");
+    document.getElementById("lbl-legend-booked").textContent = getT("legendBooked");
+    document.getElementById("lbl-legend-selected").textContent = getT("legendSelected");
 
     // Trainer labels
     document.getElementById("lbl-trainer-title").textContent = getT("trainerTitle");
@@ -388,11 +548,17 @@ function applyLanguage() {
     document.getElementById("lbl-stat-1on1-sessions").textContent = getT("oneOnOneClasses");
     document.getElementById("lbl-stat-group-sessions").textContent = getT("groupClasses");
 
+    // Trainer Calendar Legend
+    document.getElementById("lbl-trainer-calendar-title").textContent = getT("trainerCalendarTitle");
+    document.getElementById("lbl-legend-teaching").textContent = getT("legendTeaching");
+    document.getElementById("lbl-legend-trainer-selected").textContent = getT("legendTrainerSelected");
+
     // Admin labels
     document.getElementById("lbl-admin-title").textContent = getT("adminTitle");
     document.getElementById("lbl-tab-students").textContent = getT("tabStudents");
     document.getElementById("lbl-tab-sessions").textContent = getT("tabSessions");
     document.getElementById("lbl-tab-export").textContent = getT("tabExport");
+    document.getElementById("lbl-tab-settings").textContent = getT("tabSettings");
 
     document.getElementById("lbl-manage-students-title").textContent = getT("manageStudents");
     document.getElementById("lbl-btn-add-student").textContent = getT("addStudentBtn");
@@ -432,6 +598,19 @@ function applyLanguage() {
 
     document.getElementById("lbl-db-mgmt-title").textContent = getT("dbMgmtTitle");
     document.getElementById("lbl-btn-db-reset").innerHTML = `<i class="fa-solid fa-rotate-left"></i> ${getT("btnDbReset")}`;
+
+    // Admin Settings Page translations
+    document.getElementById("lbl-settings-title").textContent = getT("settingsTitle");
+    document.getElementById("lbl-settings-subtitle").textContent = getT("settingsSubtitle");
+    document.getElementById("lbl-settings-group-class-title").innerHTML = `<i class="fa-solid fa-users"></i> ${getT("settingsGroupClassTitle")}`;
+    document.getElementById("lbl-set-group-trial").textContent = getT("setGroupTrial");
+    document.getElementById("lbl-set-group-normal").textContent = getT("setGroupNormal");
+    document.getElementById("lbl-set-group-min").textContent = getT("setGroupMin");
+    document.getElementById("lbl-settings-pt-title").innerHTML = `<i class="fa-solid fa-dumbbell"></i> ${getT("settingsPtTitle")}`;
+    document.getElementById("lbl-set-pt-1").textContent = getT("setPt1");
+    document.getElementById("lbl-set-pt-10").textContent = getT("setPt10");
+    document.getElementById("lbl-set-pt-20").textContent = getT("setPt20");
+    document.getElementById("lbl-btn-save-settings").textContent = getT("btnSaveSettings");
 
     // Modals & Form fields translation
     document.getElementById("lbl-create-session-modal-title").textContent = getT("createSessionModalTitle");
@@ -487,6 +666,9 @@ function renderCurrentView() {
 function renderStudentView() {
     const student = db.users.get(state.currentStudentId);
     if (!student) return;
+
+    // Render Student monthly calendar
+    renderCalendar('student', state.calendarDate);
 
     // Load student package
     const pkg = db.packages.getByStudent(state.currentStudentId);
@@ -551,11 +733,27 @@ function renderStudentView() {
             const typeClass = item.session.Class_Type === "1 on 1" ? "badge-1on1" : "badge-group";
             const typeLabel = item.session.Class_Type === "1 on 1" ? getT("oneOnOne") : getT("groupClass");
 
+            let groupStatusBadgeHtml = "";
+            if (item.session.Class_Type === "Group Class") {
+                const settings = db.settings.get();
+                const minParticipants = settings.Group_Min_Participants || 2;
+                const activeBookings = db.bookings.list().filter(b => b.Session_ID === item.session.Session_ID && b.Status === "Confirmed");
+                const count = activeBookings.length;
+                if (count < minParticipants) {
+                    groupStatusBadgeHtml = `<span class="status-badge status-badge-pending" style="display:inline-block; font-size:0.7rem; padding: 0.1rem 0.4rem; border-radius:3px; margin-left:5px;">${state.language === "zh-tw" ? "待成班" : "Pending"}</span>`;
+                } else {
+                    groupStatusBadgeHtml = `<span class="status-badge status-badge-confirmed" style="display:inline-block; font-size:0.7rem; padding: 0.1rem 0.4rem; border-radius:3px; margin-left:5px;">${state.language === "zh-tw" ? "已成班" : "Confirmed"}</span>`;
+                }
+            }
+
             return `
                 <article class="booking-item-card">
                     <div class="booking-item-header">
                         <span class="booking-trainer-name">${trName}</span>
-                        <span class="booking-type-indicator ${typeClass}">${typeLabel}</span>
+                        <div style="display: flex; align-items: center;">
+                            <span class="booking-type-indicator ${typeClass}">${typeLabel}</span>
+                            ${groupStatusBadgeHtml}
+                        </div>
                     </div>
                     <div class="booking-time-display">${item.session.Start_Time} - ${item.session.End_Time}</div>
                     <div class="booking-date-display">${formatDateDisplay(item.session.Date)}</div>
@@ -574,8 +772,21 @@ function renderStudentView() {
     }
 
     // Available Sessions Board
+    const headerTitle = document.getElementById("lbl-available-sessions-title");
+    if (state.selectedDateStr) {
+        const clearBtnHtml = `<button class="btn btn-secondary btn-sm" style="display:inline-block; margin-left: 10px; padding: 0.2rem 0.5rem; width: auto;" onclick="clearDateFilter()"><i class="fa-solid fa-xmark"></i> ${state.language === "zh-tw" ? "清除篩選" : "Clear"}</button>`;
+        headerTitle.innerHTML = `${getT("bookSessionTitle")} <span style="font-size:0.9rem; font-weight:normal; color:var(--primary-color);">(${formatDateDisplay(state.selectedDateStr)})</span> ${clearBtnHtml}`;
+    } else {
+        headerTitle.textContent = getT("bookSessionTitle");
+    }
+
     const availSessionsList = document.getElementById("student-available-sessions-list");
     let availableSessions = sessions.filter(s => s.Status !== "Finished");
+
+    // Filter by calendar date
+    if (state.selectedDateStr) {
+        availableSessions = availableSessions.filter(s => s.Date === state.selectedDateStr);
+    }
 
     // Filter type
     if (state.filterStudentSessions === "1on1") {
@@ -606,9 +817,23 @@ function renderStudentView() {
                 ? "status-full"
                 : (s.Status === "Full" ? "status-full" : "status-available");
 
-            const isBtnDisabled = alreadyBooked || s.Status === "Full" || remSlots <= 0;
+            const isBtnDisabled = alreadyBooked || s.Status === "Full" || (s.Class_Type === "1 on 1" && remSlots <= 0);
             const typeLabel = s.Class_Type === "1 on 1" ? getT("oneOnOne") : getT("groupClass");
             const typeBadgeClass = s.Class_Type === "1 on 1" ? "badge-1on1" : "badge-group";
+
+            // Price rules display
+            const settings = db.settings.get();
+            let priceText = "";
+            if (s.Class_Type === "1 on 1") {
+                priceText = `${settings.PT_Price_1} NT`;
+            } else {
+                const studentGroupBookingsCount = db.bookings.list().filter(b => b.Student_ID === state.currentStudentId && b.Status === "Confirmed" && db.sessions.get(b.Session_ID)?.Class_Type === "Group Class").length;
+                if (studentGroupBookingsCount === 0) {
+                    priceText = `${settings.Group_Trial_Price} NT (Trial) / ${settings.Group_Normal_Price} NT`;
+                } else {
+                    priceText = `${settings.Group_Normal_Price} NT`;
+                }
+            }
 
             return `
                 <article class="session-card">
@@ -627,6 +852,10 @@ function renderStudentView() {
                         <div class="session-detail-row">
                             <span>${getT("formTrainer")}:</span>
                             <strong>${trName}</strong>
+                        </div>
+                        <div class="session-detail-row">
+                            <span>${state.language === "zh-tw" ? "費用:" : "Price:"}</span>
+                            <strong>${priceText}</strong>
                         </div>
                         <div class="session-detail-row" style="flex-direction: column; gap: 0.2rem; margin-top: 0.25rem;">
                             <div style="display:flex; justify-content:space-between">
@@ -661,8 +890,10 @@ function renderTrainerView() {
     const trainer = db.users.get(state.currentTrainerId);
     if (!trainer) return;
 
+    // Render Trainer monthly calendar
+    renderCalendar('trainer', state.calendarDate);
+
     const sessions = db.sessions.list().filter(s => s.Trainer_ID === state.currentTrainerId);
-    sessions.sort((a, b) => new Date(`${a.Date} ${a.Start_Time}`) - new Date(`${b.Date} ${b.Start_Time}`));
 
     // Summaries
     const totalCount = sessions.length;
@@ -673,10 +904,26 @@ function renderTrainerView() {
     document.getElementById("trainer-stat-1on1").textContent = oneOnOneCount;
     document.getElementById("trainer-stat-group").textContent = groupCount;
 
+    // Filter by selected calendar date if active
+    let filteredSessions = sessions;
+    if (state.selectedDateStr) {
+        filteredSessions = sessions.filter(s => s.Date === state.selectedDateStr);
+    }
+
+    const scheduleHeader = document.getElementById("lbl-my-schedule-title");
+    if (state.selectedDateStr) {
+        const clearBtnHtml = `<button class="btn btn-secondary btn-sm" style="display:inline-block; margin-left: 10px; padding: 0.2rem 0.5rem;" onclick="clearDateFilter()"><i class="fa-solid fa-xmark"></i> ${state.language === "zh-tw" ? "清除篩選" : "Clear Filter"}</button>`;
+        scheduleHeader.innerHTML = `${getT("myScheduleTitle")} <span style="font-size:0.9rem; font-weight:normal; color:var(--primary-color);">(${formatDateDisplay(state.selectedDateStr)})</span> ${clearBtnHtml}`;
+    } else {
+        scheduleHeader.textContent = getT("myScheduleTitle");
+    }
+
+    filteredSessions.sort((a, b) => new Date(`${a.Date} ${a.Start_Time}`) - new Date(`${b.Date} ${b.Start_Time}`));
+
     // Render sessions
     const trainerScheduleList = document.getElementById("trainer-sessions-list");
-    if (sessions.length > 0) {
-        trainerScheduleList.innerHTML = sessions.map(s => {
+    if (filteredSessions.length > 0) {
+        trainerScheduleList.innerHTML = filteredSessions.map(s => {
             const confirmedBookings = db.bookings.filterBySession(s.Session_ID);
             const currentCount = confirmedBookings.length;
             const pct = Math.min(100, Math.round((currentCount / s.Max_Capacity) * 100));
@@ -732,7 +979,7 @@ function renderTrainerView() {
 // RENDER: ADMIN VIEW
 function renderAdminView() {
     // Show correct sub-tab contents
-    const tabs = ["students", "sessions", "export"];
+    const tabs = ["students", "sessions", "export", "settings"];
     tabs.forEach(tab => {
         const content = document.getElementById(`admin-tab-content-${tab}`);
         const btn = document.getElementById(`tab-${tab}-btn`);
@@ -807,6 +1054,17 @@ function renderAdminView() {
             const statusClass = s.Status === "Full" ? "status-full" : (s.Status === "Finished" ? "status-finished" : "status-available");
             const statusLabel = s.Status === "Full" ? getT("statusFull") : (s.Status === "Finished" ? getT("statusFinished") : getT("statusAvailable"));
 
+            let groupStatusText = "";
+            if (s.Class_Type === "Group Class") {
+                const settings = db.settings.get();
+                const minParticipants = settings.Group_Min_Participants || 2;
+                if (activeBookings.length < minParticipants) {
+                    groupStatusText = ` <span class="status-badge status-badge-pending" style="font-size: 0.75rem; padding: 0.1rem 0.3rem; border-radius: 3px; margin-left: 5px;">${state.language === "zh-tw" ? "待成班" : "Pending"}</span>`;
+                } else {
+                    groupStatusText = ` <span class="status-badge status-badge-confirmed" style="font-size: 0.75rem; padding: 0.1rem 0.3rem; border-radius: 3px; margin-left: 5px;">${state.language === "zh-tw" ? "已成班" : "Confirmed"}</span>`;
+                }
+            }
+
             return `
                 <tr>
                     <td><strong>${s.Session_ID}</strong></td>
@@ -817,7 +1075,7 @@ function renderAdminView() {
                         <div><strong>${s.Start_Time} - ${s.End_Time}</strong></div>
                         <div class="session-date-val">${formatDateDisplay(s.Date)}</div>
                     </td>
-                    <td><span class="session-status-badge ${statusClass}">${statusLabel}</span></td>
+                    <td><span class="session-status-badge ${statusClass}">${statusLabel}</span>${groupStatusText}</td>
                     <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${bookedNames}">${bookingNamesDisplay}</td>
                     <td>
                         <button class="btn btn-secondary btn-sm" onclick="openParticipantsModal('${s.Session_ID}')">
@@ -827,6 +1085,17 @@ function renderAdminView() {
                 </tr>
             `;
         }).join("");
+    }
+
+    // Tab 4: Package & Pricing Settings
+    if (state.activeAdminTab === "settings") {
+        const settings = db.settings.get();
+        document.getElementById("settings-group-trial").value = settings.Group_Trial_Price;
+        document.getElementById("settings-group-normal").value = settings.Group_Normal_Price;
+        document.getElementById("settings-group-min-users").value = settings.Group_Min_Participants;
+        document.getElementById("settings-pt-1").value = settings.PT_Price_1;
+        document.getElementById("settings-pt-10").value = settings.PT_Price_10;
+        document.getElementById("settings-pt-20").value = settings.PT_Price_20;
     }
 }
 
@@ -846,12 +1115,14 @@ window.bookSessionAction = function (sessionId) {
         return;
     }
 
-    // Check if student has remaining slots
+    // Check if student has remaining slots (only if it is a 1 on 1 class)
     const packages = db.packages.list();
     const studentPackage = packages.find(p => p.Student_ID === state.currentStudentId);
-    if (!studentPackage || studentPackage.Remaining_Slots <= 0) {
-        showToast(getT("noCredits"), "error");
-        return;
+    if (session.Class_Type === "1 on 1") {
+        if (!studentPackage || studentPackage.Remaining_Slots <= 0) {
+            showToast(getT("noCredits"), "error");
+            return;
+        }
     }
 
     // Check if student already has a confirmed booking for this session
@@ -876,9 +1147,11 @@ window.bookSessionAction = function (sessionId) {
     bookings.push(newBooking);
     db.bookings.save(bookings);
 
-    // Deduct remaining slots
-    studentPackage.Remaining_Slots -= 1;
-    db.packages.save(packages);
+    // Deduct remaining slots only if it is a 1 on 1 class
+    if (session.Class_Type === "1 on 1" && studentPackage) {
+        studentPackage.Remaining_Slots -= 1;
+        db.packages.save(packages);
+    }
 
     // Recalculate session capacity
     const activeBookings = bookings.filter(b => b.Session_ID === sessionId && b.Status === "Confirmed");
@@ -949,6 +1222,13 @@ document.getElementById("btn-open-create-session").addEventListener("click", () 
     // Default trainer
     selectTrainer.value = state.currentTrainerId;
 
+    // Disallow Trainer from scheduling for other Trainers
+    if (state.currentUser && state.currentUser.Role === "Trainer") {
+        selectTrainer.disabled = true;
+    } else {
+        selectTrainer.disabled = false;
+    }
+
     // Set default date to today
     const dateInput = document.getElementById("session-date");
     const today = new Date().toISOString().substring(0, 10);
@@ -992,6 +1272,18 @@ document.getElementById("form-create-session").addEventListener("submit", (e) =>
     }
 
     const sessions = db.sessions.list();
+
+    // Check for trainer session overlap on the same day
+    const overlap = sessions.some(s => {
+        if (s.Trainer_ID !== trainerId || s.Date !== date || s.Status === "Finished") return false;
+        return s.Start_Time < end && s.End_Time > start;
+    });
+
+    if (overlap) {
+        showToast(state.language === "zh-tw" ? "該時段已有排課，請選擇其他時間！" : "Trainer already has a session scheduled during this time!", "error");
+        return;
+    }
+
     const newSessionId = generateId("S", sessions, "Session_ID");
 
     const newSession = {
@@ -1303,12 +1595,344 @@ document.querySelectorAll(".btn-export").forEach(btn => {
 document.getElementById("btn-db-reset").addEventListener("click", () => {
     if (confirm(state.language === "zh-tw" ? "您確定要重設所有資料庫表格並清除預約嗎？" : "Are you sure you want to reset all tables to default sample data?")) {
         db.init(true);
+        state.currentUser = null;
+        localStorage.removeItem("LJD_pt_logged_in_user");
         showToast(getT("dbResetSuccess"), "success");
-        renderCurrentView();
+        applyLanguage();
     }
 });
 
 // ==========================================
-// 12. INITIALIZATION RUN
+// 12. NEW FEATURE IMPLEMENTATIONS (AUTH, CALENDAR & SETTINGS)
 // ==========================================
-applyLanguage(); // This runs renderCurrentView() inside
+
+// Calendar Renderer
+function renderCalendar(viewType, dateObj) {
+    const gridId = `${viewType}-calendar-grid`;
+    const monthYearId = `${viewType}-cal-month-year`;
+    
+    const gridContainer = document.getElementById(gridId);
+    const monthYearDisplay = document.getElementById(monthYearId);
+    if (!gridContainer || !monthYearDisplay) return;
+    
+    gridContainer.innerHTML = "";
+    
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    
+    // Set Header Month Year
+    const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthNamesZh = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+    
+    if (state.language === "zh-tw") {
+        monthYearDisplay.textContent = `${year}年 ${monthNamesZh[month]}`;
+    } else {
+        monthYearDisplay.textContent = `${monthNamesEn[month]} ${year}`;
+    }
+    
+    // Day Headers
+    const daysHeaderEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const daysHeaderZh = ["日", "一", "二", "三", "四", "五", "六"];
+    const headers = state.language === "zh-tw" ? daysHeaderZh : daysHeaderEn;
+    
+    headers.forEach(h => {
+        const headerCell = document.createElement("div");
+        headerCell.className = "calendar-cell header-cell";
+        headerCell.textContent = h;
+        gridContainer.appendChild(headerCell);
+    });
+    
+    // First day of month
+    const firstDay = new Date(year, month, 1).getDay();
+    // Number of days in month
+    const numDays = new Date(year, month + 1, 0).getDate();
+    
+    // Preceding empty cells
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "calendar-cell empty-cell";
+        gridContainer.appendChild(emptyCell);
+    }
+    
+    // Day cells
+    const today = new Date();
+    const sessions = db.sessions.list();
+    const bookings = db.bookings.list();
+    
+    for (let day = 1; day <= numDays; day++) {
+        const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell";
+        
+        // Highlight today
+        if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day) {
+            cell.classList.add("today-cell");
+        }
+        
+        // Highlight selected
+        if (state.selectedDateStr === cellDateStr) {
+            cell.classList.add("selected-cell");
+        }
+        
+        // Add Day number
+        const dayNum = document.createElement("span");
+        dayNum.className = "cell-day-num";
+        dayNum.textContent = day;
+        cell.appendChild(dayNum);
+        
+        // Find sessions on this day
+        const daySessions = sessions.filter(s => s.Date === cellDateStr && s.Status !== "Finished");
+        const dotsContainer = document.createElement("div");
+        dotsContainer.className = "cell-dots-container";
+        
+        if (viewType === "student") {
+            let hasAvailable = false;
+            let hasBooked = false;
+            
+            daySessions.forEach(s => {
+                const isBooked = bookings.some(b => b.Session_ID === s.Session_ID && b.Student_ID === state.currentStudentId && b.Status === "Confirmed");
+                if (isBooked) {
+                    hasBooked = true;
+                } else if (s.Status === "Available") {
+                    hasAvailable = true;
+                }
+            });
+            
+            if (hasBooked) {
+                const dot = document.createElement("span");
+                dot.className = "cell-dot dot-booked";
+                dot.title = state.language === "zh-tw" ? "您已預約課程" : "Your Booking";
+                dotsContainer.appendChild(dot);
+            }
+            if (hasAvailable) {
+                const dot = document.createElement("span");
+                dot.className = "cell-dot dot-available";
+                dot.title = state.language === "zh-tw" ? "有可預約課程" : "Available Class";
+                dotsContainer.appendChild(dot);
+            }
+        } else if (viewType === "trainer") {
+            const trainerSessions = daySessions.filter(s => s.Trainer_ID === state.currentTrainerId);
+            if (trainerSessions.length > 0) {
+                const dot = document.createElement("span");
+                dot.className = "cell-dot dot-booked";
+                dot.title = state.language === "zh-tw" ? "今日有授課" : "Teaching Day";
+                dotsContainer.appendChild(dot);
+            }
+        }
+        
+        cell.appendChild(dotsContainer);
+        
+        // Day Cell Click listener
+        cell.addEventListener("click", () => {
+            if (state.selectedDateStr === cellDateStr) {
+                state.selectedDateStr = ""; // Clear filter
+            } else {
+                state.selectedDateStr = cellDateStr; // Filter by date
+            }
+            renderCurrentView();
+        });
+        
+        gridContainer.appendChild(cell);
+    }
+}
+
+// Clear Date Filter Action
+window.clearDateFilter = function() {
+    state.selectedDateStr = "";
+    renderCurrentView();
+};
+
+// Calendar Navigation
+document.getElementById("btn-student-cal-prev").addEventListener("click", () => {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() - 1);
+    renderCurrentView();
+});
+document.getElementById("btn-student-cal-next").addEventListener("click", () => {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() + 1);
+    renderCurrentView();
+});
+document.getElementById("btn-trainer-cal-prev").addEventListener("click", () => {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() - 1);
+    renderCurrentView();
+});
+document.getElementById("btn-trainer-cal-next").addEventListener("click", () => {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() + 1);
+    renderCurrentView();
+});
+
+// Authentication UI Event Listeners
+const tabLoginBtn = document.getElementById("tab-login-btn");
+const tabRegisterBtn = document.getElementById("tab-register-btn");
+const formLogin = document.getElementById("form-login");
+const formRegister = document.getElementById("form-register");
+
+tabLoginBtn.addEventListener("click", () => {
+    tabLoginBtn.classList.add("active");
+    tabRegisterBtn.classList.remove("active");
+    formLogin.classList.add("active");
+    formRegister.classList.remove("active");
+});
+
+tabRegisterBtn.addEventListener("click", () => {
+    tabRegisterBtn.classList.add("active");
+    tabLoginBtn.classList.remove("active");
+    formRegister.classList.add("active");
+    formLogin.classList.remove("active");
+});
+
+// Submit Login Form
+formLogin.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const identifier = document.getElementById("login-identifier").value.trim();
+    
+    if (!identifier) {
+        showToast(getT("invalidEmail"), "error");
+        return;
+    }
+
+    const users = db.users.list();
+    const user = users.find(u => u.Email === identifier || u.Phone === identifier);
+
+    if (user) {
+        state.currentUser = user;
+        state.role = user.Role.toLowerCase();
+        
+        if (state.role === "student") {
+            state.currentStudentId = user.User_ID;
+            document.querySelectorAll(".role-btn").forEach(b => {
+                b.classList.remove("active");
+                if (b.getAttribute("data-role") === "student") b.classList.add("active");
+            });
+            document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById("view-student").classList.add("active");
+        } else if (state.role === "trainer") {
+            state.currentTrainerId = user.User_ID;
+            document.querySelectorAll(".role-btn").forEach(b => {
+                b.classList.remove("active");
+                if (b.getAttribute("data-role") === "trainer") b.classList.add("active");
+            });
+            document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById("view-trainer").classList.add("active");
+        } else if (state.role === "admin") {
+            document.querySelectorAll(".role-btn").forEach(b => {
+                b.classList.remove("active");
+                if (b.getAttribute("data-role") === "admin") b.classList.add("active");
+            });
+            document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById("view-admin").classList.add("active");
+        }
+
+        localStorage.setItem("LJD_pt_logged_in_user", JSON.stringify(user));
+        showToast(getT("loginSuccess"), "success");
+        applyLanguage();
+    } else {
+        showToast(getT("loginFailed"), "error");
+    }
+});
+
+// Submit Register Form (Student Registration)
+formRegister.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("register-name").value.trim();
+    const email = document.getElementById("register-email").value.trim();
+    const phone = document.getElementById("register-phone").value.trim();
+
+    const users = db.users.list();
+    
+    // Check if email or phone already exists
+    const exists = users.some(u => u.Email === email || u.Phone === phone);
+    if (exists) {
+        showToast(state.language === "zh-tw" ? "該信箱或電話已被註冊！" : "Email or Phone already registered!", "error");
+        return;
+    }
+
+    const newUserId = generateId("U", users, "User_ID");
+    const newUser = {
+        User_ID: newUserId,
+        Name: name,
+        Role: "Student",
+        Email: email,
+        Phone: phone
+    };
+
+    users.push(newUser);
+    db.users.save(users);
+
+    // Default package for newly registered students (with 0 default slots)
+    const packages = db.packages.list();
+    const newPkgId = generateId("P", packages, "Package_ID");
+    const newPkg = {
+        Package_ID: newPkgId,
+        Student_ID: newUserId,
+        Total_Slots: 0,
+        Remaining_Slots: 0
+    };
+    packages.push(newPkg);
+    db.packages.save(packages);
+
+    // Auto login
+    state.currentUser = newUser;
+    state.role = "student";
+    state.currentStudentId = newUserId;
+    localStorage.setItem("LJD_pt_logged_in_user", JSON.stringify(newUser));
+
+    // Force student view in UI
+    document.querySelectorAll(".role-btn").forEach(b => {
+        b.classList.remove("active");
+        if (b.getAttribute("data-role") === "student") b.classList.add("active");
+    });
+    document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById("view-student").classList.add("active");
+
+    showToast(state.language === "zh-tw" ? "註冊成功並已登入！" : "Registered and logged in successfully!", "success");
+    
+    // Clear registration inputs
+    document.getElementById("register-name").value = "";
+    document.getElementById("register-email").value = "";
+    document.getElementById("register-phone").value = "";
+    
+    // Reset tabs
+    tabLoginBtn.click();
+
+    applyLanguage();
+});
+
+// Logout Button Click
+document.getElementById("btn-logout").addEventListener("click", () => {
+    state.currentUser = null;
+    state.role = "student";
+    state.currentStudentId = "";
+    state.selectedDateStr = "";
+    localStorage.removeItem("LJD_pt_logged_in_user");
+    showToast(getT("logoutSuccess"), "info");
+    applyLanguage();
+});
+
+// Admin Pricing settings Form Submit
+document.getElementById("form-pricing-settings").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const settings = {
+        Group_Trial_Price: parseInt(document.getElementById("settings-group-trial").value) || 0,
+        Group_Normal_Price: parseInt(document.getElementById("settings-group-normal").value) || 0,
+        Group_Min_Participants: parseInt(document.getElementById("settings-group-min-users").value) || 2,
+        PT_Price_1: parseInt(document.getElementById("settings-pt-1").value) || 0,
+        PT_Price_10: parseInt(document.getElementById("settings-pt-10").value) || 0,
+        PT_Price_20: parseInt(document.getElementById("settings-pt-20").value) || 0
+    };
+
+    db.settings.save(settings);
+    showToast(getT("settingsUpdatedSuccess"), "success");
+    renderAdminView();
+});
+
+// Switch Admin Sub-Tabs listener for Settings tab
+document.getElementById("tab-settings-btn").addEventListener("click", () => {
+    state.activeAdminTab = "settings";
+    renderAdminView();
+});
+
+// ==========================================
+// 13. INITIALIZATION RUN
+// ==========================================
+applyLanguage(); // Boot application
