@@ -55,7 +55,44 @@ const translations = {
         formSaveSession: "Save Session",
         formCancel: "Cancel",
         sessionCreatedSuccess: "Session created successfully!",
+        sessionUpdatedSuccess: "Session updated successfully!",
+        editSessionModalTitle: "Edit Class Session",
+        editClassBtn: "Edit Class",
+        cannotEditFinishedClass: "Cannot edit a finished class!",
+        cannotReduceCapacityBelowBookings: "Cannot reduce capacity below the number of registered students!",
+        editSessionLockedWarning: "Trainer and Class Type are locked because students have already booked this session.",
         invalidSessionTime: "End time must be after start time!",
+        editUserModalTitle: "Edit Member Account",
+        userUpdatedSuccess: "User account updated successfully!",
+        userDeletedSuccess: "User account deleted successfully!",
+        deleteUserConfirm: "Are you sure you want to delete this account? This action cannot be undone.",
+        cannotDeleteSelf: "You cannot delete your own active account!",
+        cannotDeleteStudentWithBookings: "Cannot delete this student because they have active session bookings!",
+        cannotDeleteTrainerWithSessions: "Cannot delete this trainer because they have scheduled classes!",
+        ptCreditsTitle: "1-on-1 PT Credits",
+        groupCreditsTitle: "Group Class Credits",
+        buyPtPackageBtn: "Buy PT Package",
+        buyGroupPackageBtn: "Buy Group Package",
+        buyPackageModalTitle: "Purchase Class Credits",
+        creditTypeLbl: "Credit Type",
+        selectPackageOptionLbl: "Select Package Option",
+        totalCostLbl: "Total Cost",
+        payAndAddCreditsBtn: "Add Credit",
+        packagePurchasedSuccess: "Purchase request submitted! Credits will be added once approved by Admin.",
+        thGroupCredits: "Group Credits",
+        formGroupTotalSlots: "Total Group Purchased Slots",
+        formGroupRemainingSlots: "Remaining Group Slots",
+        lblTabRequests: "Credit Requests",
+        lblManageRequestsTitle: "Manage Credit Requests",
+        thReqStudent: "Student",
+        thReqType: "Credit Type",
+        thReqSlots: "Slots Requested",
+        thReqPrice: "Total Price",
+        thReqDate: "Request Date",
+        thReqStatus: "Status",
+        thReqActions: "Actions",
+        requestApprovedMsg: "Purchase request approved successfully! Credits added to student account.",
+        requestRejectedMsg: "Purchase request has been rejected.",
 
         // Admin View
         adminTitle: "Admin Management Console",
@@ -128,6 +165,12 @@ const translations = {
         loginFailed: "User not found. Please register or verify spelling!",
         logoutSuccess: "Logged out successfully.",
         invalidEmail: "Please enter a valid email or phone number!",
+        lblPassword: "Password",
+        lblPasswordPlaceholder: "Enter your password",
+        lblPasswordMinLength: "Password must be at least 4 characters long!",
+        passwordWrong: "Incorrect password! Please try again.",
+        adminUserPasswordLbl: "Password (leave blank to keep current)",
+        adminUserPasswordRequiredLbl: "Password",
 
         // Settings tab & Pricing
         tabSettings: "Settings",
@@ -202,7 +245,44 @@ const translations = {
         formSaveSession: "儲存開課",
         formCancel: "取消",
         sessionCreatedSuccess: "課程時段已成功建立！",
+        sessionUpdatedSuccess: "課程時段已成功更新！",
+        editSessionModalTitle: "編輯開課時段",
+        editClassBtn: "編輯課程",
+        cannotEditFinishedClass: "無法編輯已結束的課程！",
+        cannotReduceCapacityBelowBookings: "最大容納人數不能低於目前已預約的學員人數！",
+        editSessionLockedWarning: "由於已有學員預約，授課教練與課程類型已被鎖定。",
         invalidSessionTime: "結束時間必須晚於開始時間！",
+        editUserModalTitle: "編輯成員帳號",
+        userUpdatedSuccess: "用戶帳號已成功更新！",
+        userDeletedSuccess: "用戶帳號已成功刪除！",
+        deleteUserConfirm: "您確定要刪除此帳號嗎？此操作將無法復原。",
+        cannotDeleteSelf: "您無法刪除自己目前登入的帳號！",
+        cannotDeleteStudentWithBookings: "無法刪除此學員，因為其有尚未結束/已確認的課程預約！",
+        cannotDeleteTrainerWithSessions: "無法刪除此教練，因為其有排定的課程！",
+        ptCreditsTitle: "1對1 私人教練課餘額",
+        groupCreditsTitle: "團體課餘額",
+        buyPtPackageBtn: "購買 PT 方案",
+        buyGroupPackageBtn: "購買團體課方案",
+        buyPackageModalTitle: "購買課程點數",
+        creditTypeLbl: "點數類型",
+        selectPackageOptionLbl: "選擇購買方案",
+        totalCostLbl: "總計費用",
+        payAndAddCreditsBtn: "申請額度",
+        packagePurchasedSuccess: "購買請求已送出！管理員審核通過後將自動發放額度。",
+        thGroupCredits: "團體課餘額",
+        formGroupTotalSlots: "購買總團體課堂數",
+        formGroupRemainingSlots: "剩餘團體課堂數",
+        lblTabRequests: "額度審核",
+        lblManageRequestsTitle: "審核額度購買請求",
+        thReqStudent: "學員",
+        thReqType: "額度類型",
+        thReqSlots: "申請堂數",
+        thReqPrice: "總金額",
+        thReqDate: "申請時間",
+        thReqStatus: "狀態",
+        thReqActions: "操作",
+        requestApprovedMsg: "額度購買請求已核准！已成功儲值至學員帳戶。",
+        requestRejectedMsg: "額度購買請求已被拒絕。",
 
         // Admin View
         adminTitle: "系統管理主控台",
@@ -275,6 +355,12 @@ const translations = {
         loginFailed: "找不到用戶，請檢查輸入或進行註冊！",
         logoutSuccess: "已成功登出。",
         invalidEmail: "請輸入有效的信箱或電話！",
+        lblPassword: "密碼",
+        lblPasswordPlaceholder: "請輸入密碼",
+        lblPasswordMinLength: "密碼長度必須至少為 4 個字元！",
+        passwordWrong: "密碼錯誤！請再試一次。",
+        adminUserPasswordLbl: "密碼 (保留空白以維持原密碼)",
+        adminUserPasswordRequiredLbl: "密碼",
 
         // Settings tab & Pricing
         tabSettings: "設定",
@@ -307,10 +393,10 @@ const translations = {
 // 2. DEFAULT SEED DATA STRUCTURES
 // ==========================================
 const defaultUsers = [
-    { User_ID: "U001", Name: "Phatcharin Admin", Role: "Admin", Email: "phatcharin@example.com", Phone: "081-000-0000" },
-    { User_ID: "U002", Name: "Somchai Trainer", Role: "Trainer", Email: "somchai.pt@example.com", Phone: "082-000-0000" },
-    { User_ID: "U003", Name: "Kanya Student", Role: "Student", Email: "kanya@example.com", Phone: "083-000-0000" },
-    { User_ID: "U004", Name: "Anan Student", Role: "Student", Email: "anan@example.com", Phone: "084-000-0000" }
+    { User_ID: "U001", Name: "Phatcharin Admin", Role: "Admin", Email: "phatcharin@example.com", Phone: "081-000-0000", Password: "123" },
+    { User_ID: "U002", Name: "Somchai Trainer", Role: "Trainer", Email: "somchai.pt@example.com", Phone: "082-000-0000", Password: "123" },
+    { User_ID: "U003", Name: "Kanya Student", Role: "Student", Email: "kanya@example.com", Phone: "083-000-0000", Password: "123" },
+    { User_ID: "U004", Name: "Anan Student", Role: "Student", Email: "anan@example.com", Phone: "084-000-0000", Password: "123" }
 ];
 
 const defaultSessions = [
@@ -326,8 +412,13 @@ const defaultBookings = [
 ];
 
 const defaultPackages = [
-    { Package_ID: "P001", Student_ID: "U003", Total_Slots: 10, Remaining_Slots: 7 },
-    { Package_ID: "P002", Student_ID: "U004", Total_Slots: 5, Remaining_Slots: 4 }
+    { Package_ID: "P001", Student_ID: "U003", Total_Slots: 10, Remaining_Slots: 7, Group_Total_Slots: 5, Group_Remaining_Slots: 3 },
+    { Package_ID: "P002", Student_ID: "U004", Total_Slots: 5, Remaining_Slots: 4, Group_Total_Slots: 2, Group_Remaining_Slots: 1 }
+];
+
+const defaultPurchaseRequests = [
+    { Request_ID: "R001", Student_ID: "U003", Type: "pt", Slots: 10, Price: 14500, Request_Date: "2026-07-08 12:00:00", Status: "Pending" },
+    { Request_ID: "R002", Student_ID: "U004", Type: "group", Slots: 5, Price: 2700, Request_Date: "2026-07-08 12:15:00", Status: "Pending" }
 ];
 
 // ==========================================
@@ -342,7 +433,9 @@ let state = {
     activeAdminTab: "students",
     filterStudentSessions: "all",
     calendarDate: new Date(), // Selected month in calendar
-    selectedDateStr: "" // Filter sessions list by specific date (e.g. "2026-07-10")
+    selectedDateStr: "", // Filter sessions list by specific date (e.g. "2026-07-10")
+    editingSessionId: null, // Stores the ID of the session currently being edited
+    editingUserId: null // Stores the ID of the user account currently being edited
 };
 
 // ==========================================
@@ -368,9 +461,13 @@ const db = {
             db.set("bookings", defaultBookings);
             db.set("packages", defaultPackages);
             db.set("settings", defaultSettings);
+            db.set("purchase_requests", defaultPurchaseRequests);
         }
         if (!localStorage.getItem("LJD_pt_settings")) {
             db.set("settings", defaultSettings);
+        }
+        if (!localStorage.getItem("LJD_pt_purchase_requests")) {
+            db.set("purchase_requests", defaultPurchaseRequests);
         }
     },
 
@@ -395,6 +492,11 @@ const db = {
         list: () => db.get("packages") || [],
         save: (list) => db.set("packages", list),
         getByStudent: (studentId) => db.packages.list().find(p => p.Student_ID === studentId)
+    },
+    purchaseRequests: {
+        list: () => db.get("purchase_requests") || [],
+        save: (list) => db.set("purchase_requests", list),
+        get: (id) => db.purchaseRequests.list().find(r => r.Request_ID === id)
     },
     settings: {
         get: () => db.get("settings") || defaultSettings,
@@ -516,11 +618,14 @@ function applyLanguage() {
 
     // Login Overlay Elements
     document.getElementById("lbl-login-identifier").textContent = getT("loginIdentifier");
+    document.getElementById("lbl-login-password").textContent = getT("lblPassword");
+    document.getElementById("login-password").placeholder = getT("lblPasswordPlaceholder");
     document.getElementById("lbl-btn-login").textContent = getT("btnSignIn");
-    document.getElementById("lbl-demo-accounts").textContent = getT("demoAccounts");
     document.getElementById("lbl-reg-name").textContent = getT("regName");
     document.getElementById("lbl-reg-email").textContent = getT("regEmail");
     document.getElementById("lbl-reg-phone").textContent = getT("regPhone");
+    document.getElementById("lbl-reg-password").textContent = getT("lblPassword");
+    document.getElementById("register-password").placeholder = getT("lblPasswordPlaceholder");
     document.getElementById("lbl-btn-register").textContent = getT("btnCreateAccount");
 
     // Student labels
@@ -558,10 +663,20 @@ function applyLanguage() {
     document.getElementById("lbl-tab-students").textContent = getT("tabStudents");
     document.getElementById("lbl-tab-sessions").textContent = getT("tabSessions");
     document.getElementById("lbl-tab-export").textContent = getT("tabExport");
+    document.getElementById("lbl-tab-requests").textContent = getT("lblTabRequests");
     document.getElementById("lbl-tab-settings").textContent = getT("tabSettings");
 
     document.getElementById("lbl-manage-students-title").textContent = getT("manageStudents");
     document.getElementById("lbl-btn-add-student").textContent = getT("addStudentBtn");
+    
+    document.getElementById("lbl-manage-requests-title").textContent = getT("lblManageRequestsTitle");
+    document.getElementById("th-req-student").textContent = getT("thReqStudent");
+    document.getElementById("th-req-type").textContent = getT("thReqType");
+    document.getElementById("th-req-slots").textContent = getT("thReqSlots");
+    document.getElementById("th-req-price").textContent = getT("thReqPrice");
+    document.getElementById("th-req-date").textContent = getT("thReqDate");
+    document.getElementById("th-req-status").textContent = getT("thReqStatus");
+    document.getElementById("th-req-actions").textContent = getT("thReqActions");
 
     document.getElementById("th-student-name").textContent = getT("thName");
     document.getElementById("th-student-email").textContent = getT("thEmail");
@@ -613,7 +728,12 @@ function applyLanguage() {
     document.getElementById("lbl-btn-save-settings").textContent = getT("btnSaveSettings");
 
     // Modals & Form fields translation
-    document.getElementById("lbl-create-session-modal-title").textContent = getT("createSessionModalTitle");
+    if (state.editingSessionId) {
+        document.getElementById("lbl-create-session-modal-title").textContent = getT("editSessionModalTitle");
+    } else {
+        document.getElementById("lbl-create-session-modal-title").textContent = getT("createSessionModalTitle");
+    }
+    document.getElementById("lbl-edit-session-warning-text").textContent = getT("editSessionLockedWarning");
     document.getElementById("lbl-form-trainer").textContent = getT("formTrainer");
     document.getElementById("lbl-form-class-type").textContent = getT("formClassType");
     document.getElementById("lbl-form-capacity").textContent = getT("formCapacity");
@@ -626,7 +746,11 @@ function applyLanguage() {
     document.getElementById("lbl-participants-title").textContent = getT("participantsListTitle");
     document.getElementById("btn-close-participants-footer").textContent = getT("formCancel").replace("取消", "關閉").replace("Cancel", "Close");
 
-    document.getElementById("lbl-user-modal-title").textContent = getT("addUserModalTitle");
+    if (state.editingUserId) {
+        document.getElementById("lbl-user-modal-title").textContent = getT("editUserModalTitle");
+    } else {
+        document.getElementById("lbl-user-modal-title").textContent = getT("addUserModalTitle");
+    }
     document.getElementById("lbl-form-user-name").textContent = getT("formFullName");
     document.getElementById("lbl-form-user-email").textContent = getT("formEmail");
     document.getElementById("lbl-form-user-phone").textContent = getT("formPhone");
@@ -672,14 +796,34 @@ function renderStudentView() {
 
     // Load student package
     const pkg = db.packages.getByStudent(state.currentStudentId);
-    const remSlots = pkg ? pkg.Remaining_Slots : 0;
-    const totSlots = pkg ? pkg.Total_Slots : 0;
-
+    
+    // PT credits
+    const remSlots = pkg ? (pkg.Remaining_Slots !== undefined ? pkg.Remaining_Slots : 0) : 0;
+    const totSlots = pkg ? (pkg.Total_Slots !== undefined ? pkg.Total_Slots : 0) : 0;
     document.getElementById("student-credits-value").textContent = remSlots;
     document.getElementById("student-total-slots").textContent = `/ ${totSlots}`;
     document.getElementById("student-package-details").textContent = pkg
         ? `${getT("packageIdLbl")}: ${pkg.Package_ID}`
         : `${getT("packageIdLbl")}: None`;
+    
+    // Group Class credits
+    const groupRemSlots = pkg ? (pkg.Group_Remaining_Slots !== undefined ? pkg.Group_Remaining_Slots : 0) : 0;
+    const groupTotSlots = pkg ? (pkg.Group_Total_Slots !== undefined ? pkg.Group_Total_Slots : 0) : 0;
+    document.getElementById("student-group-credits-value").textContent = groupRemSlots;
+    document.getElementById("student-group-total-slots").textContent = `/ ${groupTotSlots}`;
+    document.getElementById("student-group-package-details").textContent = pkg
+        ? `${getT("packageIdLbl")}: ${pkg.Package_ID}`
+        : `${getT("packageIdLbl")}: None`;
+
+    // Localize header text and button labels
+    document.getElementById("lbl-student-pt-credits-title").textContent = getT("ptCreditsTitle");
+    document.getElementById("lbl-student-group-credits-title").textContent = getT("groupCreditsTitle");
+    document.getElementById("btn-buy-pt-pkg").innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${getT("buyPtPackageBtn")}`;
+    document.getElementById("btn-buy-group-pkg").innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${getT("buyGroupPackageBtn")}`;
+
+    // Bind buy button actions
+    document.getElementById("btn-buy-pt-pkg").onclick = () => window.openBuyPackageModal("pt");
+    document.getElementById("btn-buy-group-pkg").onclick = () => window.openBuyPackageModal("group");
 
     // List upcoming sessions
     const bookings = db.bookings.list().filter(b => b.Student_ID === state.currentStudentId && b.Status === "Confirmed");
@@ -821,18 +965,23 @@ function renderStudentView() {
             const typeLabel = s.Class_Type === "1 on 1" ? getT("oneOnOne") : getT("groupClass");
             const typeBadgeClass = s.Class_Type === "1 on 1" ? "badge-1on1" : "badge-group";
 
-            // Price rules display
-            const settings = db.settings.get();
-            let priceText = "";
-            if (s.Class_Type === "1 on 1") {
-                priceText = `${settings.PT_Price_1} NT`;
-            } else {
+            // Price rules display (only show for Group Classes)
+            let priceRowHtml = "";
+            if (s.Class_Type === "Group Class") {
+                const settings = db.settings.get();
+                let priceText = "";
                 const studentGroupBookingsCount = db.bookings.list().filter(b => b.Student_ID === state.currentStudentId && b.Status === "Confirmed" && db.sessions.get(b.Session_ID)?.Class_Type === "Group Class").length;
                 if (studentGroupBookingsCount === 0) {
                     priceText = `${settings.Group_Trial_Price} NT (Trial) / ${settings.Group_Normal_Price} NT`;
                 } else {
                     priceText = `${settings.Group_Normal_Price} NT`;
                 }
+                priceRowHtml = `
+                    <div class="session-detail-row">
+                        <span>${state.language === "zh-tw" ? "費用:" : "Price:"}</span>
+                        <strong>${priceText}</strong>
+                    </div>
+                `;
             }
 
             return `
@@ -853,10 +1002,7 @@ function renderStudentView() {
                             <span>${getT("formTrainer")}:</span>
                             <strong>${trName}</strong>
                         </div>
-                        <div class="session-detail-row">
-                            <span>${state.language === "zh-tw" ? "費用:" : "Price:"}</span>
-                            <strong>${priceText}</strong>
-                        </div>
+                        ${priceRowHtml}
                         <div class="session-detail-row" style="flex-direction: column; gap: 0.2rem; margin-top: 0.25rem;">
                             <div style="display:flex; justify-content:space-between">
                                 <span>${state.language === "zh-tw" ? "預約進度:" : "Capacity:"}</span>
@@ -958,10 +1104,15 @@ function renderTrainerView() {
                             </div>
                         </div>
                     </div>
-                    <div class="session-card-footer">
-                        <button class="btn btn-secondary" onclick="openParticipantsModal('${s.Session_ID}')">
+                    <div class="session-card-footer" style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" style="flex: 1;" onclick="openParticipantsModal('${s.Session_ID}')">
                             <i class="fa-solid fa-users"></i> ${getT("viewParticipants")}
                         </button>
+                        ${s.Status !== "Finished" ? `
+                        <button class="btn btn-primary" style="flex: 1;" onclick="openEditSessionModal('${s.Session_ID}')">
+                            <i class="fa-solid fa-pen-to-square"></i> ${getT("editClassBtn")}
+                        </button>
+                        ` : ''}
                     </div>
                 </article>
             `;
@@ -979,7 +1130,7 @@ function renderTrainerView() {
 // RENDER: ADMIN VIEW
 function renderAdminView() {
     // Show correct sub-tab contents
-    const tabs = ["students", "sessions", "export", "settings"];
+    const tabs = ["students", "sessions", "export", "requests", "settings"];
     tabs.forEach(tab => {
         const content = document.getElementById(`admin-tab-content-${tab}`);
         const btn = document.getElementById(`tab-${tab}-btn`);
@@ -1000,17 +1151,51 @@ function renderAdminView() {
 
         tbody.innerHTML = users.map(u => {
             const pkg = packages.find(p => p.Student_ID === u.User_ID);
-            const creditsText = pkg
-                ? `<strong>${pkg.Remaining_Slots}</strong> / ${pkg.Total_Slots}`
-                : `<span class="text-muted">-</span>`;
+            let creditsText = `<span class="text-muted">-</span>`;
+            if (u.Role === "Student") {
+                const ptRemaining = pkg ? (pkg.Remaining_Slots !== undefined ? pkg.Remaining_Slots : 0) : 0;
+                const ptTotal = pkg ? (pkg.Total_Slots !== undefined ? pkg.Total_Slots : 0) : 0;
+                const grRemaining = pkg ? (pkg.Group_Remaining_Slots !== undefined ? pkg.Group_Remaining_Slots : 0) : 0;
+                const grTotal = pkg ? (pkg.Group_Total_Slots !== undefined ? pkg.Group_Total_Slots : 0) : 0;
+
+                creditsText = `
+                    <div style="font-size:0.85rem; line-height: 1.3;">
+                        <div>PT: <strong>${ptRemaining}</strong> / ${ptTotal}</div>
+                        <div style="color:#34d399;">Group: <strong>${grRemaining}</strong> / ${grTotal}</div>
+                    </div>
+                `;
+            }
 
             let roleClass = "badge-role-student";
             if (u.Role === "Admin") roleClass = "badge-role-admin";
             if (u.Role === "Trainer") roleClass = "badge-role-trainer";
 
-            const actions = u.Role === "Student"
-                ? `<button class="btn btn-secondary btn-sm" onclick="openEditPackageModal('${u.User_ID}')"><i class="fa-solid fa-pen-to-square"></i> ${state.language === 'zh-tw' ? '加額/修改' : 'Adjust Credits'}</button>`
-                : `<span class="text-muted">-</span>`;
+            let actionButtons = '';
+            if (u.Role === "Student") {
+                actionButtons += `
+                    <button class="btn btn-secondary btn-sm" onclick="openEditPackageModal('${u.User_ID}')" title="${state.language === 'zh-tw' ? '調整堂數' : 'Adjust Credits'}">
+                        <i class="fa-solid fa-calculator"></i>
+                    </button>
+                `;
+            }
+            actionButtons += `
+                <button class="btn btn-secondary btn-sm" onclick="openEditUserModal('${u.User_ID}')" title="${state.language === 'zh-tw' ? '編輯帳號' : 'Edit Account'}">
+                    <i class="fa-solid fa-user-pen"></i>
+                </button>
+            `;
+            if (state.currentUser && u.User_ID !== state.currentUser.User_ID) {
+                actionButtons += `
+                    <button class="btn btn-danger btn-sm" onclick="deleteUserAction('${u.User_ID}')" title="${state.language === 'zh-tw' ? '刪除帳號' : 'Delete Account'}">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+            } else {
+                actionButtons += `
+                    <button class="btn btn-danger btn-sm" disabled title="${state.language === 'zh-tw' ? '無法刪除自己' : 'Cannot delete self'}">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+            }
 
             return `
                 <tr>
@@ -1020,7 +1205,7 @@ function renderAdminView() {
                     <td>${u.Phone || "-"}</td>
                     <td><span class="badge-role ${roleClass}">${u.Role}</span></td>
                     <td>${creditsText}</td>
-                    <td class="cell-actions">${actions}</td>
+                    <td class="cell-actions">${actionButtons}</td>
                 </tr>
             `;
         }).join("");
@@ -1087,6 +1272,90 @@ function renderAdminView() {
         }).join("");
     }
 
+    // Tab 5: Credit Purchase Requests
+    if (state.activeAdminTab === "requests") {
+        const requests = db.purchaseRequests.list();
+        const users = db.users.list();
+        const tbody = document.getElementById("admin-requests-table-body");
+
+        if (requests.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                        <i class="fa-solid fa-circle-check" style="font-size:2rem; opacity:0.3; margin-bottom:0.5rem; display:block;"></i>
+                        ${state.language === "zh-tw" ? "沒有待審核的額度請求" : "No credit requests found."}
+                    </td>
+                </tr>
+            `;
+        } else {
+            // Sort requests: Pending first, then descending by Request_Date
+            const sortedRequests = [...requests].sort((a, b) => {
+                if (a.Status === "Pending" && b.Status !== "Pending") return -1;
+                if (a.Status !== "Pending" && b.Status === "Pending") return 1;
+                return new Date(b.Request_Date) - new Date(a.Request_Date);
+            });
+
+            tbody.innerHTML = sortedRequests.map(req => {
+                const student = users.find(u => u.User_ID === req.Student_ID);
+                const studentName = student ? student.Name : `Unknown Student (${req.Student_ID})`;
+                const typeLabel = req.Type === "pt" ? "1-on-1 PT" : (state.language === "zh-tw" ? "團體課" : "Group Class");
+                const typeColor = req.Type === "pt" ? "var(--primary-color)" : "#34d399";
+                
+                let statusBadge = "";
+                if (req.Status === "Pending") {
+                    statusBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.2rem 0.5rem; border-radius: 4px;">Pending</span>`;
+                } else if (req.Status === "Approved") {
+                    statusBadge = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.2rem 0.5rem; border-radius: 4px;">Approved</span>`;
+                } else {
+                    statusBadge = `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.2rem 0.5rem; border-radius: 4px;">Rejected</span>`;
+                }
+
+                let actionButtons = "";
+                if (req.Status === "Pending") {
+                    actionButtons = `
+                        <div class="action-btn-group" style="display: flex; gap: 5px;">
+                            <button class="btn btn-primary btn-sm btn-approve-request" data-id="${req.Request_ID}" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-check"></i> ${state.language === "zh-tw" ? "核准" : "Approve"}
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-reject-request" data-id="${req.Request_ID}" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-xmark"></i> ${state.language === "zh-tw" ? "拒絕" : "Reject"}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionButtons = `<span style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">-</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${studentName}</strong></td>
+                        <td><span style="color: ${typeColor}; font-weight: 600;">${typeLabel}</span></td>
+                        <td style="text-align: center;"><strong>${req.Slots}</strong></td>
+                        <td style="font-family: monospace; font-weight: 600;">NT ${req.Price.toLocaleString()}</td>
+                        <td style="font-size: 0.85rem; color: var(--text-muted);">${req.Request_Date}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actionButtons}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            // Attach action listeners
+            tbody.querySelectorAll(".btn-approve-request").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.currentTarget.getAttribute("data-id");
+                    approvePurchaseRequestAction(id);
+                });
+            });
+
+            tbody.querySelectorAll(".btn-reject-request").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.currentTarget.getAttribute("data-id");
+                    rejectPurchaseRequestAction(id);
+                });
+            });
+        }
+    }
+
     // Tab 4: Package & Pricing Settings
     if (state.activeAdminTab === "settings") {
         const settings = db.settings.get();
@@ -1115,11 +1384,16 @@ window.bookSessionAction = function (sessionId) {
         return;
     }
 
-    // Check if student has remaining slots (only if it is a 1 on 1 class)
+    // Check if student has remaining slots (based on Class_Type)
     const packages = db.packages.list();
     const studentPackage = packages.find(p => p.Student_ID === state.currentStudentId);
     if (session.Class_Type === "1 on 1") {
-        if (!studentPackage || studentPackage.Remaining_Slots <= 0) {
+        if (!studentPackage || (studentPackage.Remaining_Slots || 0) <= 0) {
+            showToast(getT("noCredits"), "error");
+            return;
+        }
+    } else if (session.Class_Type === "Group Class") {
+        if (!studentPackage || (studentPackage.Group_Remaining_Slots || 0) <= 0) {
             showToast(getT("noCredits"), "error");
             return;
         }
@@ -1147,9 +1421,13 @@ window.bookSessionAction = function (sessionId) {
     bookings.push(newBooking);
     db.bookings.save(bookings);
 
-    // Deduct remaining slots only if it is a 1 on 1 class
-    if (session.Class_Type === "1 on 1" && studentPackage) {
-        studentPackage.Remaining_Slots -= 1;
+    // Deduct remaining slots based on class type
+    if (studentPackage) {
+        if (session.Class_Type === "1 on 1") {
+            studentPackage.Remaining_Slots -= 1;
+        } else if (session.Class_Type === "Group Class") {
+            studentPackage.Group_Remaining_Slots -= 1;
+        }
         db.packages.save(packages);
     }
 
@@ -1173,21 +1451,36 @@ window.cancelBookingAction = function (bookingId) {
     const booking = bookings[bookingIndex];
     if (booking.Status === "Cancelled") return;
 
+    // Check 24-hour rule
+    const sessions = db.sessions.list();
+    const session = sessions.find(s => s.Session_ID === booking.Session_ID);
+    if (session) {
+        const now = new Date();
+        const classStart = new Date(`${session.Date} ${session.Start_Time}`);
+        const hoursDiff = (classStart - now) / (1000 * 60 * 60);
+        if (hoursDiff < 24) {
+            showToast(state.language === "zh-tw" ? "無法取消！必須在上課前 24 小時以上取消。" : "Cannot cancel! Cancellations must be made at least 24 hours prior to class start time.", "error");
+            return;
+        }
+    }
+
     // Cancel the booking (we will just set status to Cancelled)
     booking.Status = "Cancelled";
     db.bookings.save(bookings);
 
-    // Refund credit to student package
+    // Refund credit to student package based on class type
     const packages = db.packages.list();
     const studentPackage = packages.find(p => p.Student_ID === booking.Student_ID);
-    if (studentPackage) {
-        studentPackage.Remaining_Slots = Math.min(studentPackage.Total_Slots, studentPackage.Remaining_Slots + 1);
+    if (studentPackage && session) {
+        if (session.Class_Type === "1 on 1") {
+            studentPackage.Remaining_Slots = Math.min(studentPackage.Total_Slots || 0, (studentPackage.Remaining_Slots || 0) + 1);
+        } else if (session.Class_Type === "Group Class") {
+            studentPackage.Group_Remaining_Slots = Math.min(studentPackage.Group_Total_Slots || 0, (studentPackage.Group_Remaining_Slots || 0) + 1);
+        }
         db.packages.save(packages);
     }
 
     // Restore session status to Available if it was full
-    const sessions = db.sessions.list();
-    const session = sessions.find(s => s.Session_ID === booking.Session_ID);
     if (session) {
         const activeBookings = bookings.filter(b => b.Session_ID === session.Session_ID && b.Status === "Confirmed");
         if (activeBookings.length < session.Max_Capacity) {
@@ -1214,6 +1507,8 @@ function closeModal(id) {
 
 // modal: Create Session setup
 document.getElementById("btn-open-create-session").addEventListener("click", () => {
+    state.editingSessionId = null;
+
     // Set trainers choices dynamically
     const selectTrainer = document.getElementById("session-trainer");
     const trainers = db.users.list().filter(u => u.Role === "Trainer");
@@ -1229,6 +1524,10 @@ document.getElementById("btn-open-create-session").addEventListener("click", () 
         selectTrainer.disabled = false;
     }
 
+    // Enable type selection
+    document.getElementById("session-class-type").disabled = false;
+    document.getElementById("session-class-type").value = "1 on 1";
+
     // Set default date to today
     const dateInput = document.getElementById("session-date");
     const today = new Date().toISOString().substring(0, 10);
@@ -1238,11 +1537,30 @@ document.getElementById("btn-open-create-session").addEventListener("click", () 
     document.getElementById("session-start").value = "10:00";
     document.getElementById("session-end").value = "11:00";
 
+    const capacityInput = document.getElementById("session-capacity");
+    capacityInput.value = 1;
+    capacityInput.setAttribute("max", "1");
+    capacityInput.setAttribute("min", "1");
+
+    // Hide warning
+    document.getElementById("edit-session-warning").style.display = "none";
+
+    // Set title and button text
+    document.getElementById("lbl-create-session-modal-title").textContent = getT("createSessionModalTitle");
+    document.getElementById("lbl-btn-submit-session").textContent = getT("formSaveSession");
+
     openModal("modal-create-session");
 });
 
-document.getElementById("btn-close-create-session").addEventListener("click", () => closeModal("modal-create-session"));
-document.getElementById("btn-cancel-create-session").addEventListener("click", () => closeModal("modal-create-session"));
+const closeCreateSessionModal = () => {
+    state.editingSessionId = null;
+    // Enable fields again on close
+    document.getElementById("session-trainer").disabled = false;
+    document.getElementById("session-class-type").disabled = false;
+    closeModal("modal-create-session");
+};
+document.getElementById("btn-close-create-session").addEventListener("click", closeCreateSessionModal);
+document.getElementById("btn-cancel-create-session").addEventListener("click", closeCreateSessionModal);
 
 document.getElementById("session-class-type").addEventListener("change", (e) => {
     const capacityInput = document.getElementById("session-capacity");
@@ -1273,9 +1591,10 @@ document.getElementById("form-create-session").addEventListener("submit", (e) =>
 
     const sessions = db.sessions.list();
 
-    // Check for trainer session overlap on the same day
+    // Check for trainer session overlap on the same day (ignoring current session being edited)
     const overlap = sessions.some(s => {
         if (s.Trainer_ID !== trainerId || s.Date !== date || s.Status === "Finished") return false;
+        if (state.editingSessionId && s.Session_ID === state.editingSessionId) return false;
         return s.Start_Time < end && s.End_Time > start;
     });
 
@@ -1284,26 +1603,135 @@ document.getElementById("form-create-session").addEventListener("submit", (e) =>
         return;
     }
 
-    const newSessionId = generateId("S", sessions, "Session_ID");
+    if (state.editingSessionId) {
+        // Edit existing session
+        const sessionIndex = sessions.findIndex(s => s.Session_ID === state.editingSessionId);
+        if (sessionIndex !== -1) {
+            const session = sessions[sessionIndex];
+            
+            const confirmedBookings = db.bookings.filterBySession(state.editingSessionId);
+            const activeBookingsCount = confirmedBookings.length;
+            
+            if (capacity < activeBookingsCount) {
+                showToast(getT("cannotReduceCapacityBelowBookings"), "error");
+                return;
+            }
 
-    const newSession = {
-        Session_ID: newSessionId,
-        Trainer_ID: trainerId,
-        Class_Type: type,
-        Max_Capacity: capacity,
-        Date: date,
-        Start_Time: start,
-        End_Time: end,
-        Status: "Available"
-    };
+            // Only update trainer and type if there are no bookings
+            if (activeBookingsCount === 0) {
+                session.Trainer_ID = trainerId;
+                session.Class_Type = type;
+            }
 
-    sessions.push(newSession);
-    db.sessions.save(sessions);
+            session.Max_Capacity = capacity;
+            session.Date = date;
+            session.Start_Time = start;
+            session.End_Time = end;
 
-    showToast(getT("sessionCreatedSuccess"), "success");
-    closeModal("modal-create-session");
-    renderCurrentView();
+            // Recalculate status based on bookings and capacity
+            if (activeBookingsCount >= session.Max_Capacity) {
+                session.Status = "Full";
+            } else {
+                session.Status = "Available";
+            }
+
+            db.sessions.save(sessions);
+            showToast(getT("sessionUpdatedSuccess"), "success");
+            
+            state.editingSessionId = null;
+            // Enable fields again
+            document.getElementById("session-trainer").disabled = false;
+            document.getElementById("session-class-type").disabled = false;
+            closeModal("modal-create-session");
+            renderCurrentView();
+        }
+    } else {
+        // Create new session
+        const newSessionId = generateId("S", sessions, "Session_ID");
+
+        const newSession = {
+            Session_ID: newSessionId,
+            Trainer_ID: trainerId,
+            Class_Type: type,
+            Max_Capacity: capacity,
+            Date: date,
+            Start_Time: start,
+            End_Time: end,
+            Status: "Available"
+        };
+
+        sessions.push(newSession);
+        db.sessions.save(sessions);
+
+        showToast(getT("sessionCreatedSuccess"), "success");
+        closeModal("modal-create-session");
+        renderCurrentView();
+    }
 });
+
+
+// modal: Edit Session setup
+window.openEditSessionModal = function (sessionId) {
+    const session = db.sessions.get(sessionId);
+    if (!session) return;
+
+    if (session.Status === "Finished") {
+        showToast(getT("cannotEditFinishedClass"), "error");
+        return;
+    }
+
+    state.editingSessionId = sessionId;
+
+    // Set trainers choices dynamically
+    const selectTrainer = document.getElementById("session-trainer");
+    const trainers = db.users.list().filter(u => u.Role === "Trainer");
+    selectTrainer.innerHTML = trainers.map(t => `<option value="${t.User_ID}">${t.Name}</option>`).join("");
+    selectTrainer.value = session.Trainer_ID;
+
+    // Set other field values
+    document.getElementById("session-class-type").value = session.Class_Type;
+
+    const capacityInput = document.getElementById("session-capacity");
+    capacityInput.value = session.Max_Capacity;
+    if (session.Class_Type === "1 on 1") {
+        capacityInput.setAttribute("max", "1");
+    } else {
+        capacityInput.setAttribute("max", "100");
+    }
+
+    document.getElementById("session-date").value = session.Date;
+    document.getElementById("session-start").value = session.Start_Time;
+    document.getElementById("session-end").value = session.End_Time;
+
+    // Check bookings
+    const confirmedBookings = db.bookings.filterBySession(sessionId);
+    const hasBookings = confirmedBookings.length > 0;
+
+    const warningEl = document.getElementById("edit-session-warning");
+    if (hasBookings) {
+        // Lock fields
+        selectTrainer.disabled = true;
+        document.getElementById("session-class-type").disabled = true;
+        warningEl.style.display = "block";
+        capacityInput.setAttribute("min", confirmedBookings.length.toString());
+    } else {
+        // Unlock fields (but keep trainer locked if user is a Trainer)
+        if (state.currentUser && state.currentUser.Role === "Trainer") {
+            selectTrainer.disabled = true;
+        } else {
+            selectTrainer.disabled = false;
+        }
+        document.getElementById("session-class-type").disabled = false;
+        warningEl.style.display = "none";
+        capacityInput.setAttribute("min", "1");
+    }
+
+    // Set title and button text
+    document.getElementById("lbl-create-session-modal-title").textContent = getT("editSessionModalTitle");
+    document.getElementById("lbl-btn-submit-session").textContent = getT("formSaveSession");
+
+    openModal("modal-create-session");
+};
 
 
 // modal: Participant list details
@@ -1354,13 +1782,29 @@ document.getElementById("btn-close-participants-footer").addEventListener("click
 
 // modal: Create User Setup
 document.getElementById("btn-open-create-user").addEventListener("click", () => {
+    state.editingUserId = null;
     document.getElementById("form-user").reset();
     document.getElementById("package-fields").style.display = "block"; // default shown
+    document.getElementById("user-role").disabled = false;
+    document.getElementById("user-role").value = "Student";
+    
+    // Configure password field for new user creation
+    document.getElementById("user-password").required = true;
+    document.getElementById("user-password").placeholder = "Min 4 characters";
+    document.getElementById("lbl-form-user-password").textContent = getT("adminUserPasswordRequiredLbl");
+
+    document.getElementById("lbl-user-modal-title").textContent = getT("addUserModalTitle");
+    document.getElementById("lbl-btn-submit-user").textContent = getT("btnSaveMember");
     openModal("modal-user");
 });
 
-document.getElementById("btn-close-user").addEventListener("click", () => closeModal("modal-user"));
-document.getElementById("btn-cancel-user").addEventListener("click", () => closeModal("modal-user"));
+const closeUserModal = () => {
+    state.editingUserId = null;
+    document.getElementById("user-role").disabled = false;
+    closeModal("modal-user");
+};
+document.getElementById("btn-close-user").addEventListener("click", closeUserModal);
+document.getElementById("btn-cancel-user").addEventListener("click", closeUserModal);
 
 document.getElementById("user-role").addEventListener("change", (e) => {
     const pkgFields = document.getElementById("package-fields");
@@ -1378,47 +1822,167 @@ document.getElementById("form-user").submitUser = function (e) {
 document.getElementById("form-user").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("user-name").value;
-    const email = document.getElementById("user-email").value;
-    const phone = document.getElementById("user-phone").value;
+    const name = document.getElementById("user-name").value.trim();
+    const email = document.getElementById("user-email").value.trim();
+    const phone = document.getElementById("user-phone").value.trim();
     const role = document.getElementById("user-role").value;
+    const password = document.getElementById("user-password").value;
 
     const users = db.users.list();
-    const newUserId = generateId("U", users, "User_ID");
 
-    const newUser = {
-        User_ID: newUserId,
-        Name: name,
-        Role: role,
-        Email: email,
-        Phone: phone
-    };
-
-    users.push(newUser);
-    db.users.save(users);
-
-    // Package setup if student
-    if (role === "Student") {
-        const total = parseInt(document.getElementById("package-total").value) || 0;
-        const remaining = parseInt(document.getElementById("package-remaining").value) || 0;
-
-        const packages = db.packages.list();
-        const newPkgId = generateId("P", packages, "Package_ID");
-
-        const newPkg = {
-            Package_ID: newPkgId,
-            Student_ID: newUserId,
-            Total_Slots: total,
-            Remaining_Slots: remaining
-        };
-        packages.push(newPkg);
-        db.packages.save(packages);
+    // Check duplicate email or phone (ignoring the current editing user)
+    const duplicate = users.some(u => {
+        if (state.editingUserId && u.User_ID === state.editingUserId) return false;
+        return u.Email === email || (phone && u.Phone === phone);
+    });
+    if (duplicate) {
+        showToast(state.language === "zh-tw" ? "電子郵件或電話已被其他帳號使用！" : "Email or Phone Number is already in use by another account!", "error");
+        return;
     }
 
-    showToast(getT("userCreatedSuccess"), "success");
-    closeModal("modal-user");
-    renderAdminView();
+    if (state.editingUserId) {
+        // Edit existing user
+        const userIndex = users.findIndex(u => u.User_ID === state.editingUserId);
+        if (userIndex !== -1) {
+            const user = users[userIndex];
+            const oldRole = user.Role;
+
+            user.Name = name;
+            user.Email = email;
+            user.Phone = phone;
+            user.Role = role;
+            if (password) {
+                user.Password = password;
+            }
+
+            db.users.save(users);
+
+            // Handle package adjustments if role changed
+            if (oldRole !== "Student" && role === "Student") {
+                // Changed to student: create a default package
+                const packages = db.packages.list();
+                const pkgExists = packages.some(p => p.Student_ID === state.editingUserId);
+                if (!pkgExists) {
+                    const newPkgId = generateId("P", packages, "Package_ID");
+                    packages.push({
+                        Package_ID: newPkgId,
+                        Student_ID: state.editingUserId,
+                        Total_Slots: 10,
+                        Remaining_Slots: 10,
+                        Group_Total_Slots: 5,
+                        Group_Remaining_Slots: 5
+                    });
+                    db.packages.save(packages);
+                }
+            } else if (oldRole === "Student" && role !== "Student") {
+                // Changed from student: remove package
+                let packages = db.packages.list();
+                packages = packages.filter(p => p.Student_ID !== state.editingUserId);
+                db.packages.save(packages);
+            }
+
+            showToast(getT("userUpdatedSuccess"), "success");
+            state.editingUserId = null;
+            document.getElementById("user-role").disabled = false;
+            document.getElementById("user-password").value = "";
+            closeModal("modal-user");
+            renderAdminView();
+        }
+    } else {
+        // Create new user (original logic)
+        const newUserId = generateId("U", users, "User_ID");
+
+        const newUser = {
+            User_ID: newUserId,
+            Name: name,
+            Role: role,
+            Email: email,
+            Phone: phone,
+            Password: password || "123"
+        };
+
+        users.push(newUser);
+        db.users.save(users);
+
+        // Package setup if student
+        if (role === "Student") {
+            const total = parseInt(document.getElementById("package-total").value) || 0;
+            const remaining = parseInt(document.getElementById("package-remaining").value) || 0;
+            const groupTotal = parseInt(document.getElementById("package-group-total").value) || 0;
+            const groupRemaining = parseInt(document.getElementById("package-group-remaining").value) || 0;
+
+            const packages = db.packages.list();
+            const newPkgId = generateId("P", packages, "Package_ID");
+
+            const newPkg = {
+                Package_ID: newPkgId,
+                Student_ID: newUserId,
+                Total_Slots: total,
+                Remaining_Slots: remaining,
+                Group_Total_Slots: groupTotal,
+                Group_Remaining_Slots: groupRemaining
+            };
+            packages.push(newPkg);
+            db.packages.save(packages);
+        }
+
+        showToast(getT("userCreatedSuccess"), "success");
+        document.getElementById("user-password").value = "";
+        closeModal("modal-user");
+        renderAdminView();
+    }
 });
+
+
+// modal: Edit User Setup
+window.openEditUserModal = function (userId) {
+    const user = db.users.get(userId);
+    if (!user) return;
+
+    state.editingUserId = userId;
+
+    document.getElementById("user-name").value = user.Name;
+    document.getElementById("user-email").value = user.Email;
+    document.getElementById("user-phone").value = user.Phone || "";
+    document.getElementById("user-role").value = user.Role;
+    
+    // Configure password field for edit mode
+    document.getElementById("user-password").required = false;
+    document.getElementById("user-password").value = "";
+    document.getElementById("user-password").placeholder = state.language === "zh-tw" ? "保留空白以維持原密碼" : "Leave blank to keep current";
+    document.getElementById("lbl-form-user-password").textContent = getT("adminUserPasswordLbl");
+
+    // Hide package setup fields for edit mode
+    document.getElementById("package-fields").style.display = "none";
+
+    // Disable role change if they have active bookings or sessions
+    const roleSelect = document.getElementById("user-role");
+    let hasDependency = false;
+
+    if (user.Role === "Student") {
+        const bookings = db.bookings.list().filter(b => b.Student_ID === userId && b.Status === "Confirmed");
+        if (bookings.length > 0) {
+            hasDependency = true;
+        }
+    } else if (user.Role === "Trainer") {
+        const sessions = db.sessions.list().filter(s => s.Trainer_ID === userId && s.Status !== "Finished");
+        if (sessions.length > 0) {
+            hasDependency = true;
+        }
+    }
+
+    if (hasDependency) {
+        roleSelect.disabled = true;
+    } else {
+        roleSelect.disabled = false;
+    }
+
+    // Update modal title
+    document.getElementById("lbl-user-modal-title").textContent = getT("editUserModalTitle");
+    document.getElementById("lbl-btn-submit-user").textContent = getT("btnSaveMember");
+
+    openModal("modal-user");
+};
 
 
 // modal: Adjust Credits slots
@@ -1430,8 +1994,14 @@ window.openEditPackageModal = function (studentId) {
 
     document.getElementById("edit-pkg-student-id").value = studentId;
     document.getElementById("edit-pkg-student-name").textContent = student.Name;
-    document.getElementById("edit-pkg-total").value = pkg ? pkg.Total_Slots : 10;
-    document.getElementById("edit-pkg-remaining").value = pkg ? pkg.Remaining_Slots : 10;
+    document.getElementById("edit-pkg-total").value = pkg ? (pkg.Total_Slots !== undefined ? pkg.Total_Slots : 10) : 10;
+    document.getElementById("edit-pkg-remaining").value = pkg ? (pkg.Remaining_Slots !== undefined ? pkg.Remaining_Slots : 10) : 10;
+    document.getElementById("edit-pkg-group-total").value = pkg ? (pkg.Group_Total_Slots !== undefined ? pkg.Group_Total_Slots : 5) : 5;
+    document.getElementById("edit-pkg-group-remaining").value = pkg ? (pkg.Group_Remaining_Slots !== undefined ? pkg.Group_Remaining_Slots : 5) : 5;
+
+    // Apply translations for the new labels
+    document.getElementById("lbl-pkg-group-total").textContent = getT("formGroupTotalSlots");
+    document.getElementById("lbl-pkg-group-remaining").textContent = getT("formGroupRemainingSlots");
 
     openModal("modal-package-edit");
 };
@@ -1445,6 +2015,8 @@ document.getElementById("form-package-edit").addEventListener("submit", (e) => {
     const studentId = document.getElementById("edit-pkg-student-id").value;
     const total = parseInt(document.getElementById("edit-pkg-total").value);
     const remaining = parseInt(document.getElementById("edit-pkg-remaining").value);
+    const groupTotal = parseInt(document.getElementById("edit-pkg-group-total").value);
+    const groupRemaining = parseInt(document.getElementById("edit-pkg-group-remaining").value);
 
     const packages = db.packages.list();
     const pkgIndex = packages.findIndex(p => p.Student_ID === studentId);
@@ -1452,6 +2024,8 @@ document.getElementById("form-package-edit").addEventListener("submit", (e) => {
     if (pkgIndex !== -1) {
         packages[pkgIndex].Total_Slots = total;
         packages[pkgIndex].Remaining_Slots = remaining;
+        packages[pkgIndex].Group_Total_Slots = groupTotal;
+        packages[pkgIndex].Group_Remaining_Slots = groupRemaining;
     } else {
         // Create new one if somehow missing
         const newPkgId = generateId("P", packages, "Package_ID");
@@ -1459,7 +2033,9 @@ document.getElementById("form-package-edit").addEventListener("submit", (e) => {
             Package_ID: newPkgId,
             Student_ID: studentId,
             Total_Slots: total,
-            Remaining_Slots: remaining
+            Remaining_Slots: remaining,
+            Group_Total_Slots: groupTotal,
+            Group_Remaining_Slots: groupRemaining
         });
     }
 
@@ -1468,6 +2044,304 @@ document.getElementById("form-package-edit").addEventListener("submit", (e) => {
     closeModal("modal-package-edit");
     renderAdminView();
 });
+
+// Action: Approve Credit Purchase Request (Admin only)
+window.approvePurchaseRequestAction = function (requestId) {
+    const requests = db.purchaseRequests.list();
+    const req = requests.find(r => r.Request_ID === requestId);
+    if (!req || req.Status !== "Pending") return;
+
+    req.Status = "Approved";
+    db.purchaseRequests.save(requests);
+
+    const packages = db.packages.list();
+    const pkgIndex = packages.findIndex(p => p.Student_ID === req.Student_ID);
+    const slots = req.Slots;
+
+    if (pkgIndex !== -1) {
+        if (req.Type === "pt") {
+            packages[pkgIndex].Total_Slots = (packages[pkgIndex].Total_Slots || 0) + slots;
+            packages[pkgIndex].Remaining_Slots = (packages[pkgIndex].Remaining_Slots || 0) + slots;
+        } else {
+            packages[pkgIndex].Group_Total_Slots = (packages[pkgIndex].Group_Total_Slots || 0) + slots;
+            packages[pkgIndex].Group_Remaining_Slots = (packages[pkgIndex].Group_Remaining_Slots || 0) + slots;
+        }
+    } else {
+        const newPkgId = generateId("P", packages, "Package_ID");
+        const newPkg = {
+            Package_ID: newPkgId,
+            Student_ID: req.Student_ID,
+            Total_Slots: req.Type === "pt" ? slots : 0,
+            Remaining_Slots: req.Type === "pt" ? slots : 0,
+            Group_Total_Slots: req.Type === "group" ? slots : 0,
+            Group_Remaining_Slots: req.Type === "group" ? slots : 0
+        };
+        packages.push(newPkg);
+    }
+    db.packages.save(packages);
+
+    showToast(getT("requestApprovedMsg"), "success");
+    renderAdminView();
+};
+
+// Action: Reject Credit Purchase Request (Admin only)
+window.rejectPurchaseRequestAction = function (requestId) {
+    const requests = db.purchaseRequests.list();
+    const req = requests.find(r => r.Request_ID === requestId);
+    if (!req || req.Status !== "Pending") return;
+
+    req.Status = "Rejected";
+    db.purchaseRequests.save(requests);
+
+    showToast(getT("requestRejectedMsg"), "success");
+    renderAdminView();
+};
+
+// Action: Delete user account (Admin only)
+window.deleteUserAction = function (userId) {
+    if (state.currentUser && userId === state.currentUser.User_ID) {
+        showToast(getT("cannotDeleteSelf"), "error");
+        return;
+    }
+
+    const user = db.users.get(userId);
+    if (!user) return;
+
+    // Check if Student has active bookings
+    if (user.Role === "Student") {
+        const bookings = db.bookings.list().filter(b => b.Student_ID === userId && b.Status === "Confirmed");
+        if (bookings.length > 0) {
+            showToast(getT("cannotDeleteStudentWithBookings"), "error");
+            return;
+        }
+    }
+
+    // Check if Trainer has scheduled sessions
+    if (user.Role === "Trainer") {
+        const sessions = db.sessions.list().filter(s => s.Trainer_ID === userId && s.Status !== "Finished");
+        if (sessions.length > 0) {
+            showToast(getT("cannotDeleteTrainerWithSessions"), "error");
+            return;
+        }
+    }
+
+    // Double check confirmation
+    if (confirm(getT("deleteUserConfirm"))) {
+        // Remove user
+        let users = db.users.list();
+        users = users.filter(u => u.User_ID !== userId);
+        db.users.save(users);
+
+        // Remove package if it exists
+        let packages = db.packages.list();
+        packages = packages.filter(p => p.Student_ID !== userId);
+        db.packages.save(packages);
+
+        showToast(getT("userDeletedSuccess"), "success");
+        renderAdminView();
+    }
+};
+
+
+
+// modal: Buy Package Slots (Student Dashboard)
+window.openBuyPackageModal = function (type) {
+    const settings = db.settings.get() || defaultSettings;
+    const typeInput = document.getElementById("buy-pkg-type");
+    const typeText = document.getElementById("buy-pkg-type-text");
+    const optionSelect = document.getElementById("buy-pkg-option");
+    const priceDisplay = document.getElementById("buy-pkg-total-price");
+
+    typeInput.value = type;
+
+    // Clear previous options
+    optionSelect.innerHTML = "";
+
+    // Helper to calculate total price
+    function updateTotalPrice() {
+        const slots = parseInt(optionSelect.value) || 0;
+        let totalCost = 0;
+
+        if (type === "pt") {
+            if (slots === 1) totalCost = settings.PT_Price_1;
+            else if (slots === 10) totalCost = settings.PT_Price_10 * 10;
+            else if (slots === 20) totalCost = settings.PT_Price_20 * 20;
+        } else if (type === "group") {
+            // Check trial qualification
+            const groupBookingsCount = db.bookings.list().filter(b => 
+                b.Student_ID === state.currentStudentId && 
+                b.Status === "Confirmed"
+            ).length;
+
+            const isTrial = (groupBookingsCount === 0);
+
+            const val = optionSelect.value;
+            if (val === "1") {
+                totalCost = isTrial ? settings.Group_Trial_Price : settings.Group_Normal_Price;
+            } else if (val === "1_normal") {
+                totalCost = settings.Group_Normal_Price;
+            } else if (val === "5") {
+                totalCost = isTrial 
+                    ? (settings.Group_Trial_Price + 4 * settings.Group_Normal_Price) 
+                    : (5 * settings.Group_Normal_Price);
+            } else if (val === "5_normal") {
+                totalCost = 5 * settings.Group_Normal_Price;
+            } else if (val === "10") {
+                totalCost = 10 * settings.Group_Normal_Price;
+            } else if (val === "20") {
+                totalCost = 20 * settings.Group_Normal_Price;
+            }
+        }
+        priceDisplay.textContent = `NT ${totalCost.toLocaleString()}`;
+    }
+
+    if (type === "pt") {
+        typeText.textContent = "1-on-1 PT";
+        typeText.style.color = "var(--primary-color)";
+
+        // Options
+        const opt1 = document.createElement("option");
+        opt1.value = "1";
+        opt1.textContent = `1 Session (NT ${settings.PT_Price_1.toLocaleString()})`;
+        optionSelect.appendChild(opt1);
+
+        const opt10 = document.createElement("option");
+        opt10.value = "10";
+        opt10.textContent = `10 Sessions (NT ${(settings.PT_Price_10 * 10).toLocaleString()})`;
+        optionSelect.appendChild(opt10);
+
+        const opt20 = document.createElement("option");
+        opt20.value = "20";
+        opt20.textContent = `20 Sessions (NT ${(settings.PT_Price_20 * 20).toLocaleString()})`;
+        optionSelect.appendChild(opt20);
+    } else {
+        typeText.textContent = state.language === "zh-tw" ? "團體課" : "Group Class";
+        typeText.style.color = "#34d399";
+
+        // Check trial qualification
+        const groupBookingsCount = db.bookings.list().filter(b => 
+            b.Student_ID === state.currentStudentId && 
+            b.Status === "Confirmed"
+        ).length;
+        const isTrial = (groupBookingsCount === 0);
+
+        const trialPrice = settings.Group_Trial_Price;
+        const normalPrice = settings.Group_Normal_Price;
+
+        const price1 = isTrial ? trialPrice : normalPrice;
+        const price5 = isTrial ? (trialPrice + 4 * normalPrice) : (5 * normalPrice);
+        const price10 = 10 * normalPrice;
+        const price20 = 20 * normalPrice;
+
+        const normalRateLabel = state.language === "zh-tw" ? "一般原價" : "Normal Rate";
+
+        if (isTrial) {
+            const opt1Trial = document.createElement("option");
+            opt1Trial.value = "1";
+            opt1Trial.textContent = `1 Session (NT ${trialPrice.toLocaleString()}) [Trial Price]`;
+            optionSelect.appendChild(opt1Trial);
+        }
+
+        const opt1Normal = document.createElement("option");
+        opt1Normal.value = "1_normal";
+        opt1Normal.textContent = `1 Session (NT ${normalPrice.toLocaleString()}) [${normalRateLabel}]`;
+        optionSelect.appendChild(opt1Normal);
+
+        if (isTrial) {
+            const opt5Trial = document.createElement("option");
+            opt5Trial.value = "5";
+            opt5Trial.textContent = `5 Sessions (NT ${price5.toLocaleString()}) [Trial Price incl.]`;
+            optionSelect.appendChild(opt5Trial);
+        }
+
+        const opt5Normal = document.createElement("option");
+        opt5Normal.value = "5_normal";
+        opt5Normal.textContent = `5 Sessions (NT ${(5 * normalPrice).toLocaleString()}) [${normalRateLabel}]`;
+        optionSelect.appendChild(opt5Normal);
+
+        const opt10 = document.createElement("option");
+        opt10.value = "10";
+        opt10.textContent = `10 Sessions (NT ${price10.toLocaleString()}) [${normalRateLabel}]`;
+        optionSelect.appendChild(opt10);
+
+        const opt20 = document.createElement("option");
+        opt20.value = "20";
+        opt20.textContent = `20 Sessions (NT ${price20.toLocaleString()}) [${normalRateLabel}]`;
+        optionSelect.appendChild(opt20);
+    }
+
+    // Set translation titles
+    document.getElementById("lbl-buy-pkg-title").textContent = getT("buyPackageModalTitle");
+    document.getElementById("lbl-buy-pkg-type-display").textContent = getT("creditTypeLbl");
+    document.getElementById("lbl-buy-pkg-option").textContent = getT("selectPackageOptionLbl");
+    document.getElementById("lbl-buy-pkg-price-label").textContent = getT("totalCostLbl");
+    document.getElementById("lbl-btn-submit-buy-package").innerHTML = `<i class="fa-solid fa-credit-card"></i> ${getT("payAndAddCreditsBtn")}`;
+
+    // Handle updates on change
+    optionSelect.onchange = updateTotalPrice;
+
+    // Initialize total cost
+    updateTotalPrice();
+
+    openModal("modal-buy-package");
+};
+
+document.getElementById("btn-close-buy-package").addEventListener("click", () => closeModal("modal-buy-package"));
+document.getElementById("btn-cancel-buy-package").addEventListener("click", () => closeModal("modal-buy-package"));
+
+// Form buy package submit handler
+document.getElementById("form-buy-package").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const type = document.getElementById("buy-pkg-type").value;
+    const slots = parseInt(document.getElementById("buy-pkg-option").value) || 0;
+
+    // Get total cost
+    const settings = db.settings.get() || defaultSettings;
+    let totalCost = 0;
+    if (type === "pt") {
+        if (slots === 1) totalCost = settings.PT_Price_1;
+        else if (slots === 10) totalCost = settings.PT_Price_10 * 10;
+        else if (slots === 20) totalCost = settings.PT_Price_20 * 20;
+    } else {
+        const groupBookingsCount = db.bookings.list().filter(b => 
+            b.Student_ID === state.currentStudentId && 
+            b.Status === "Confirmed"
+        ).length;
+        const isTrial = (groupBookingsCount === 0);
+        const optValue = document.getElementById("buy-pkg-option").value;
+        if (optValue === "1") totalCost = isTrial ? settings.Group_Trial_Price : settings.Group_Normal_Price;
+        else if (optValue === "1_normal") totalCost = settings.Group_Normal_Price;
+        else if (optValue === "5") totalCost = isTrial ? (settings.Group_Trial_Price + 4 * settings.Group_Normal_Price) : (5 * settings.Group_Normal_Price);
+        else if (optValue === "5_normal") totalCost = 5 * settings.Group_Normal_Price;
+        else if (optValue === "10") totalCost = 10 * settings.Group_Normal_Price;
+        else if (optValue === "20") totalCost = 20 * settings.Group_Normal_Price;
+    }
+
+    // Save purchase request
+    const requests = db.purchaseRequests.list();
+    const newReqId = generateId("R", requests, "Request_ID");
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10) + " " + now.toTimeString().slice(0, 8);
+    const newRequest = {
+        Request_ID: newReqId,
+        Student_ID: state.currentStudentId,
+        Type: type,
+        Slots: slots,
+        Price: totalCost,
+        Request_Date: dateStr,
+        Status: "Pending"
+    };
+    requests.push(newRequest);
+    db.purchaseRequests.save(requests);
+
+    const successMsg = getT("packagePurchasedSuccess");
+
+    showToast(successMsg, "success");
+    closeModal("modal-buy-package");
+    renderStudentView();
+});
+
 
 // ==========================================
 // 10. TAB & VIEW CONTROL HANDLERS
@@ -1501,6 +2375,10 @@ document.getElementById("tab-sessions-btn").addEventListener("click", () => {
 });
 document.getElementById("tab-export-btn").addEventListener("click", () => {
     state.activeAdminTab = "export";
+    renderAdminView();
+});
+document.getElementById("tab-requests-btn").addEventListener("click", () => {
+    state.activeAdminTab = "requests";
     renderAdminView();
 });
 
@@ -1785,6 +2663,7 @@ tabRegisterBtn.addEventListener("click", () => {
 formLogin.addEventListener("submit", (e) => {
     e.preventDefault();
     const identifier = document.getElementById("login-identifier").value.trim();
+    const password = document.getElementById("login-password").value;
     
     if (!identifier) {
         showToast(getT("invalidEmail"), "error");
@@ -1795,6 +2674,12 @@ formLogin.addEventListener("submit", (e) => {
     const user = users.find(u => u.Email === identifier || u.Phone === identifier);
 
     if (user) {
+        const userPassword = user.Password || "123";
+        if (userPassword !== password) {
+            showToast(getT("passwordWrong"), "error");
+            return;
+        }
+
         state.currentUser = user;
         state.role = user.Role.toLowerCase();
         
@@ -1825,6 +2710,7 @@ formLogin.addEventListener("submit", (e) => {
 
         localStorage.setItem("LJD_pt_logged_in_user", JSON.stringify(user));
         showToast(getT("loginSuccess"), "success");
+        document.getElementById("login-password").value = "";
         applyLanguage();
     } else {
         showToast(getT("loginFailed"), "error");
@@ -1837,6 +2723,12 @@ formRegister.addEventListener("submit", (e) => {
     const name = document.getElementById("register-name").value.trim();
     const email = document.getElementById("register-email").value.trim();
     const phone = document.getElementById("register-phone").value.trim();
+    const password = document.getElementById("register-password").value;
+
+    if (password.length < 4) {
+        showToast(getT("lblPasswordMinLength"), "error");
+        return;
+    }
 
     const users = db.users.list();
     
@@ -1853,7 +2745,8 @@ formRegister.addEventListener("submit", (e) => {
         Name: name,
         Role: "Student",
         Email: email,
-        Phone: phone
+        Phone: phone,
+        Password: password
     };
 
     users.push(newUser);
@@ -1891,6 +2784,7 @@ formRegister.addEventListener("submit", (e) => {
     document.getElementById("register-name").value = "";
     document.getElementById("register-email").value = "";
     document.getElementById("register-phone").value = "";
+    document.getElementById("register-password").value = "";
     
     // Reset tabs
     tabLoginBtn.click();
