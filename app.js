@@ -2577,6 +2577,14 @@ function renderCalendar(viewType, dateObj) {
                 }
             });
             
+            if (hasBooked && hasAvailable) {
+                cell.classList.add("cell-has-both");
+            } else if (hasBooked) {
+                cell.classList.add("cell-has-booked");
+            } else if (hasAvailable) {
+                cell.classList.add("cell-has-available");
+            }
+
             if (hasBooked) {
                 const dot = document.createElement("span");
                 dot.className = "cell-dot dot-booked";
@@ -2592,6 +2600,7 @@ function renderCalendar(viewType, dateObj) {
         } else if (viewType === "trainer") {
             const trainerSessions = daySessions.filter(s => s.Trainer_ID === state.currentTrainerId);
             if (trainerSessions.length > 0) {
+                cell.classList.add("cell-has-booked");
                 const dot = document.createElement("span");
                 dot.className = "cell-dot dot-booked";
                 dot.title = state.language === "zh-tw" ? "今日有授課" : "Teaching Day";
