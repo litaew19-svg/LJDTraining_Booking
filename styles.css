@@ -1591,13 +1591,13 @@ body:has(#lang-select option[value="zh-tw"]:checked) {
 }
 
 .dot-available {
-    background: var(--primary-color);
-    box-shadow: 0 0 8px var(--primary-color);
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
 }
 
 .dot-booked {
-    background: var(--success);
-    box-shadow: 0 0 8px var(--success);
+    background: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
 }
 
 .dot-selected {
@@ -1608,18 +1608,18 @@ body:has(#lang-select option[value="zh-tw"]:checked) {
 
 /* Calendar Cell Status Highlights */
 .calendar-cell.cell-has-available {
-    border-bottom: 3px solid var(--primary-color) !important;
-    background: rgba(99, 102, 241, 0.06) !important;
-}
-
-.calendar-cell.cell-has-booked {
     border-bottom: 3px solid var(--success) !important;
     background: rgba(16, 185, 129, 0.06) !important;
 }
 
+.calendar-cell.cell-has-booked {
+    border-bottom: 3px solid var(--primary-color) !important;
+    background: rgba(99, 102, 241, 0.06) !important;
+}
+
 .calendar-cell.cell-has-both {
-    border-bottom: 3px solid var(--success) !important;
-    border-left: 3px solid var(--primary-color) !important;
+    border-bottom: 3px solid var(--primary-color) !important;
+    border-left: 3px solid var(--success) !important;
     background: rgba(255, 255, 255, 0.03) !important;
 }
 
@@ -1700,13 +1700,13 @@ body:has(#lang-select option[value="zh-tw"]:checked) {
 }
 
 .cell-dot.dot-available {
-    background: var(--primary-color);
-    box-shadow: 0 0 6px var(--primary-color);
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
 }
 
 .cell-dot.dot-booked {
-    background: var(--success);
-    box-shadow: 0 0 6px var(--success);
+    background: var(--primary-color);
+    box-shadow: 0 0 6px var(--primary-color);
 }
 
 /* =============================================================

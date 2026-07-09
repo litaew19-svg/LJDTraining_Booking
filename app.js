@@ -441,6 +441,11 @@ let state = {
 // ==========================================
 // 4. DATABASE SERVICE (localStorage layer)
 // ==========================================
+const defaultClassTypes = [
+    { id: "CT001", name: "1 on 1", defaultCapacity: 1, isSystem: true },
+    { id: "CT002", name: "Group Class", defaultCapacity: 3, isSystem: true }
+];
+
 const defaultSettings = {
     Group_Trial_Price: 300,
     Group_Normal_Price: 600,
@@ -462,12 +467,39 @@ const db = {
             db.set("packages", defaultPackages);
             db.set("settings", defaultSettings);
             db.set("purchase_requests", defaultPurchaseRequests);
+            db.set("class_types", defaultClassTypes);
         }
         if (!localStorage.getItem("LJD_pt_settings")) {
             db.set("settings", defaultSettings);
         }
         if (!localStorage.getItem("LJD_pt_purchase_requests")) {
             db.set("purchase_requests", defaultPurchaseRequests);
+        }
+        if (!localStorage.getItem("LJD_pt_class_types")) {
+            db.set("class_types", defaultClassTypes);
+        }
+    },
+
+    classTypes: {
+        list: () => db.get("class_types") || defaultClassTypes,
+        save: (list) => db.set("class_types", list),
+        get: (id) => db.classTypes.list().find(ct => ct.id === id),
+        add: (name, defaultCapacity) => {
+            const list = db.classTypes.list();
+            const id = generateId("CT", list, "id");
+            list.push({ id, name, defaultCapacity: parseInt(defaultCapacity) || 5, isSystem: false });
+            db.classTypes.save(list);
+            return id;
+        },
+        delete: (id) => {
+            const list = db.classTypes.list();
+            const index = list.findIndex(ct => ct.id === id);
+            if (index !== -1 && !list[index].isSystem) {
+                list.splice(index, 1);
+                db.classTypes.save(list);
+                return true;
+            }
+            return false;
         }
     },
 
@@ -629,12 +661,19 @@ function applyLanguage() {
     document.getElementById("lbl-btn-register").textContent = getT("btnCreateAccount");
 
     // Student labels
-    document.getElementById("lbl-student-credits-title").textContent = getT("remainingCredits");
+    const ptCreditsTitleEl = document.getElementById("lbl-student-pt-credits-title");
+    if (ptCreditsTitleEl) ptCreditsTitleEl.textContent = getT("ptCreditsTitle");
+    const groupCreditsTitleEl = document.getElementById("lbl-student-group-credits-title");
+    if (groupCreditsTitleEl) groupCreditsTitleEl.textContent = getT("groupCreditsTitle");
+    
     document.getElementById("lbl-next-session-title").textContent = getT("nextSession");
     document.getElementById("lbl-available-sessions-title").textContent = getT("bookSessionTitle");
-    document.getElementById("btn-filter-all").textContent = getT("all");
-    document.getElementById("btn-filter-1on1").textContent = getT("oneOnOne");
-    document.getElementById("btn-filter-group").textContent = getT("groupClass");
+    const btnFilterAll = document.getElementById("btn-filter-all");
+    if (btnFilterAll) btnFilterAll.textContent = getT("all");
+    const btnFilter1on1 = document.getElementById("btn-filter-1on1");
+    if (btnFilter1on1) btnFilter1on1.textContent = getT("oneOnOne");
+    const btnFilterGroup = document.getElementById("btn-filter-group");
+    if (btnFilterGroup) btnFilterGroup.textContent = getT("groupClass");
     document.getElementById("lbl-my-bookings-title").textContent = getT("myBookings");
 
     // Student Calendar Legend
@@ -668,6 +707,11 @@ function applyLanguage() {
 
     document.getElementById("lbl-manage-students-title").textContent = getT("manageStudents");
     document.getElementById("lbl-btn-add-student").textContent = getT("addStudentBtn");
+    
+    const btnAdminAddSession = document.getElementById("lbl-btn-admin-add-session");
+    if (btnAdminAddSession) {
+        btnAdminAddSession.textContent = getT("createSessionBtn");
+    }
     
     document.getElementById("lbl-manage-requests-title").textContent = getT("lblManageRequestsTitle");
     document.getElementById("th-req-student").textContent = getT("thReqStudent");
@@ -924,6 +968,29 @@ function renderStudentView() {
         headerTitle.textContent = getT("bookSessionTitle");
     }
 
+    // Render dynamic filter bar
+    const filterBar = document.getElementById("student-filter-bar");
+    if (filterBar) {
+        const classTypes = db.classTypes.list();
+        let buttonsHtml = `<button class="filter-btn ${state.filterStudentSessions === 'all' ? 'active' : ''}" data-filter="all" style="width: auto; padding: 0.3rem 1rem; font-size: 0.85rem;">${state.language === 'zh-tw' ? '全部' : 'All'}</button>`;
+        classTypes.forEach(ct => {
+            let localizedName = ct.name;
+            if (state.language === 'zh-tw') {
+                if (ct.name === '1 on 1') localizedName = '一對一';
+                else if (ct.name === 'Group Class') localizedName = '團體課';
+            }
+            buttonsHtml += `<button class="filter-btn ${state.filterStudentSessions === ct.name ? 'active' : ''}" data-filter="${ct.name}" style="width: auto; padding: 0.3rem 1rem; font-size: 0.85rem; margin-left: 0.4rem;">${localizedName}</button>`;
+        });
+        filterBar.innerHTML = buttonsHtml;
+        
+        filterBar.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.onclick = (e) => {
+                state.filterStudentSessions = e.currentTarget.getAttribute("data-filter");
+                renderStudentView();
+            };
+        });
+    }
+
     const availSessionsList = document.getElementById("student-available-sessions-list");
     let availableSessions = sessions.filter(s => s.Status !== "Finished");
 
@@ -933,10 +1000,8 @@ function renderStudentView() {
     }
 
     // Filter type
-    if (state.filterStudentSessions === "1on1") {
-        availableSessions = availableSessions.filter(s => s.Class_Type === "1 on 1");
-    } else if (state.filterStudentSessions === "group") {
-        availableSessions = availableSessions.filter(s => s.Class_Type === "Group Class");
+    if (state.filterStudentSessions !== "all") {
+        availableSessions = availableSessions.filter(s => s.Class_Type === state.filterStudentSessions);
     }
 
     // Sort chronologically
@@ -1262,9 +1327,15 @@ function renderAdminView() {
                     </td>
                     <td><span class="session-status-badge ${statusClass}">${statusLabel}</span>${groupStatusText}</td>
                     <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${bookedNames}">${bookingNamesDisplay}</td>
-                    <td>
-                        <button class="btn btn-secondary btn-sm" onclick="openParticipantsModal('${s.Session_ID}')">
-                            <i class="fa-solid fa-eye"></i> ${getT("viewParticipants")}
+                    <td class="cell-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="openParticipantsModal('${s.Session_ID}')" title="${state.language === 'zh-tw' ? '檢視學員' : 'View Participants'}">
+                            <i class="fa-solid fa-users"></i>
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="openEditSessionModal('${s.Session_ID}')" title="${state.language === 'zh-tw' ? '編輯課程' : 'Edit Class'}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSessionAction('${s.Session_ID}')" title="${state.language === 'zh-tw' ? '刪除課程' : 'Delete Class'}">
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
                 </tr>
@@ -1365,8 +1436,44 @@ function renderAdminView() {
         document.getElementById("settings-pt-1").value = settings.PT_Price_1;
         document.getElementById("settings-pt-10").value = settings.PT_Price_10;
         document.getElementById("settings-pt-20").value = settings.PT_Price_20;
+        renderAdminClassTypes();
     }
 }
+
+function renderAdminClassTypes() {
+    const classTypes = db.classTypes.list();
+    const tbody = document.getElementById("admin-class-types-table-body");
+    if (!tbody) return;
+
+    tbody.innerHTML = classTypes.map(ct => {
+        const deleteButton = ct.isSystem 
+            ? `<span style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">${state.language === 'zh-tw' ? '系統鎖定' : 'System Locked'}</span>`
+            : `<button class="btn btn-danger btn-sm" onclick="deleteClassTypeAction('${ct.id}')" title="${state.language === 'zh-tw' ? '刪除此類別' : 'Delete Type'}">
+                  <i class="fa-solid fa-trash-can"></i>
+               </button>`;
+        
+        return `
+            <tr>
+                <td><strong>${ct.id}</strong></td>
+                <td>${ct.name}</td>
+                <td>${ct.defaultCapacity}</td>
+                <td>${deleteButton}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+window.deleteClassTypeAction = function (id) {
+    const confirmMsg = state.language === "zh-tw" ? "確定要刪除此課程類別嗎？" : "Are you sure you want to delete this class type?";
+    if (!confirm(confirmMsg)) return;
+
+    const success = db.classTypes.delete(id);
+    if (success) {
+        showToast(state.language === "zh-tw" ? "課程類別已刪除" : "Class type deleted", "info");
+        renderAdminClassTypes();
+        renderCurrentView(); // Re-render student dynamic filters or other lists
+    }
+};
 
 // ==========================================
 // 8. ACTIONS & BOOKING ENGINE
@@ -1506,7 +1613,7 @@ function closeModal(id) {
 }
 
 // modal: Create Session setup
-document.getElementById("btn-open-create-session").addEventListener("click", () => {
+window.openCreateSessionModal = function() {
     state.editingSessionId = null;
 
     // Set trainers choices dynamically
@@ -1514,19 +1621,27 @@ document.getElementById("btn-open-create-session").addEventListener("click", () 
     const trainers = db.users.list().filter(u => u.Role === "Trainer");
 
     selectTrainer.innerHTML = trainers.map(t => `<option value="${t.User_ID}">${t.Name}</option>`).join("");
-    // Default trainer
-    selectTrainer.value = state.currentTrainerId;
-
-    // Disallow Trainer from scheduling for other Trainers
+    
+    // Set default trainer
     if (state.currentUser && state.currentUser.Role === "Trainer") {
+        selectTrainer.value = state.currentTrainerId;
         selectTrainer.disabled = true;
     } else {
+        // For Admin or others, select the first trainer as default, and enable dropdown
+        if (trainers.length > 0) {
+            selectTrainer.value = trainers[0].User_ID;
+        } else {
+            selectTrainer.value = "";
+        }
         selectTrainer.disabled = false;
     }
 
-    // Enable type selection
-    document.getElementById("session-class-type").disabled = false;
-    document.getElementById("session-class-type").value = "1 on 1";
+    // Enable type selection and populate dynamically
+    const selectClassType = document.getElementById("session-class-type");
+    selectClassType.disabled = false;
+    const classTypes = db.classTypes.list();
+    selectClassType.innerHTML = classTypes.map(ct => `<option value="${ct.name}">${ct.name}</option>`).join("");
+    selectClassType.value = "1 on 1";
 
     // Set default date to today
     const dateInput = document.getElementById("session-date");
@@ -1550,7 +1665,13 @@ document.getElementById("btn-open-create-session").addEventListener("click", () 
     document.getElementById("lbl-btn-submit-session").textContent = getT("formSaveSession");
 
     openModal("modal-create-session");
-});
+};
+
+document.getElementById("btn-open-create-session").addEventListener("click", window.openCreateSessionModal);
+const btnAdminCreateSession = document.getElementById("btn-admin-create-session");
+if (btnAdminCreateSession) {
+    btnAdminCreateSession.addEventListener("click", window.openCreateSessionModal);
+}
 
 const closeCreateSessionModal = () => {
     state.editingSessionId = null;
@@ -1564,12 +1685,15 @@ document.getElementById("btn-cancel-create-session").addEventListener("click", c
 
 document.getElementById("session-class-type").addEventListener("change", (e) => {
     const capacityInput = document.getElementById("session-capacity");
-    if (e.target.value === "1 on 1") {
-        capacityInput.value = 1;
-        capacityInput.setAttribute("max", "1");
-    } else {
-        capacityInput.value = 3;
-        capacityInput.setAttribute("max", "100"); // Standard is 3 but can change
+    const classTypes = db.classTypes.list();
+    const selectedType = classTypes.find(ct => ct.name === e.target.value);
+    if (selectedType) {
+        capacityInput.value = selectedType.defaultCapacity;
+        if (selectedType.name === "1 on 1") {
+            capacityInput.setAttribute("max", "1");
+        } else {
+            capacityInput.setAttribute("max", "100");
+        }
     }
 });
 
@@ -1689,7 +1813,10 @@ window.openEditSessionModal = function (sessionId) {
     selectTrainer.value = session.Trainer_ID;
 
     // Set other field values
-    document.getElementById("session-class-type").value = session.Class_Type;
+    const selectClassType = document.getElementById("session-class-type");
+    const classTypes = db.classTypes.list();
+    selectClassType.innerHTML = classTypes.map(ct => `<option value="${ct.name}">${ct.name}</option>`).join("");
+    selectClassType.value = session.Class_Type;
 
     const capacityInput = document.getElementById("session-capacity");
     capacityInput.value = session.Max_Capacity;
@@ -1731,6 +1858,45 @@ window.openEditSessionModal = function (sessionId) {
     document.getElementById("lbl-btn-submit-session").textContent = getT("formSaveSession");
 
     openModal("modal-create-session");
+};
+
+
+window.deleteSessionAction = function (sessionId) {
+    const confirmMsg = state.language === "zh-tw" ? "確定要刪除此課程嗎？" : "Are you sure you want to delete this session?";
+    if (!confirm(confirmMsg)) return;
+
+    const sessions = db.sessions.list();
+    const sessionIndex = sessions.findIndex(s => s.Session_ID === sessionId);
+    if (sessionIndex === -1) return;
+
+    const session = sessions[sessionIndex];
+    const bookings = db.bookings.list();
+    const packages = db.packages.list();
+
+    // Find bookings for this session
+    const sessionBookings = bookings.filter(b => b.Session_ID === sessionId && b.Status === "Confirmed");
+    
+    if (session.Class_Type === "1 on 1") {
+        // Refund credits to student packages
+        sessionBookings.forEach(booking => {
+            const pkg = packages.find(p => p.Student_ID === booking.Student_ID);
+            if (pkg) {
+                pkg.Remaining_Slots = (pkg.Remaining_Slots || 0) + 1;
+            }
+        });
+        db.packages.save(packages);
+    }
+
+    // Delete bookings
+    const remainingBookings = bookings.filter(b => b.Session_ID !== sessionId);
+    db.bookings.save(remainingBookings);
+
+    // Delete session
+    sessions.splice(sessionIndex, 1);
+    db.sessions.save(sessions);
+
+    showToast(state.language === "zh-tw" ? "課程已成功刪除" : "Session deleted successfully", "info");
+    renderCurrentView();
 };
 
 
@@ -2382,16 +2548,7 @@ document.getElementById("tab-requests-btn").addEventListener("click", () => {
     renderAdminView();
 });
 
-// Switch Student Class Available Filters
-document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        e.target.classList.add("active");
 
-        state.filterStudentSessions = e.target.getAttribute("data-filter");
-        renderStudentView();
-    });
-});
 
 // Language Switch Event
 document.getElementById("lang-select").addEventListener("change", (e) => {
@@ -2833,6 +2990,34 @@ document.getElementById("form-pricing-settings").addEventListener("submit", (e) 
 document.getElementById("tab-settings-btn").addEventListener("click", () => {
     state.activeAdminTab = "settings";
     renderAdminView();
+});
+
+// Admin Class Types Form Submit
+document.getElementById("btn-add-class-type").addEventListener("click", () => {
+    const nameInput = document.getElementById("new-ct-name");
+    const capacityInput = document.getElementById("new-ct-capacity");
+    const name = nameInput.value.trim();
+    const capacity = parseInt(capacityInput.value) || 5;
+
+    if (!name) {
+        showToast(state.language === "zh-tw" ? "請輸入類別名稱！" : "Please enter a class type name!", "error");
+        return;
+    }
+
+    // Check if name already exists (case-insensitive)
+    const list = db.classTypes.list();
+    if (list.some(ct => ct.name.toLowerCase() === name.toLowerCase())) {
+        showToast(state.language === "zh-tw" ? "此類別名稱已存在！" : "Class type name already exists!", "error");
+        return;
+    }
+
+    db.classTypes.add(name, capacity);
+    nameInput.value = "";
+    capacityInput.value = 5;
+
+    showToast(state.language === "zh-tw" ? "已成功新增課程類別" : "Class type added successfully", "success");
+    renderAdminClassTypes();
+    renderCurrentView();
 });
 
 // ==========================================

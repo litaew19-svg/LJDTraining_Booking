@@ -191,10 +191,8 @@
 
                     <div class="section-header">
                         <h2 id="lbl-available-sessions-title">Book a Training Session</h2>
-                        <div class="filter-bar">
-                            <button class="filter-btn active" data-filter="all" id="btn-filter-all">All</button>
-                            <button class="filter-btn" data-filter="1on1" id="btn-filter-1on1">1 on 1</button>
-                            <button class="filter-btn" data-filter="group" id="btn-filter-group">Group Class</button>
+                        <div class="filter-bar" id="student-filter-bar">
+                            <!-- Populated dynamically via JS -->
                         </div>
                     </div>
                     <div class="sessions-grid" id="student-available-sessions-list">
@@ -337,6 +335,9 @@
             <div id="admin-tab-content-sessions" class="admin-tab-content">
                 <div class="action-bar">
                     <h3 id="lbl-manage-sessions-title">Manage Sessions & Bookings</h3>
+                    <button class="btn btn-primary btn-sm" id="btn-admin-create-session">
+                        <i class="fa-solid fa-plus"></i> <span id="lbl-btn-admin-add-session">Add Class Session</span>
+                    </button>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
@@ -483,6 +484,44 @@
                             <button type="submit" class="btn btn-primary" style="width: auto; padding: 0.75rem 2.5rem;" id="lbl-btn-save-settings">Save Settings</button>
                         </div>
                     </form>
+                    
+                    <!-- Manage Class Types Section -->
+                    <div class="settings-group-card" style="margin-top: 2rem;">
+                        <h4><i class="fa-solid fa-tags"></i> <span id="lbl-settings-class-types-title">Manage Class Types</span></h4>
+                        <p class="sub-heading" style="font-size:0.8rem; margin-bottom: 1rem;" id="lbl-settings-class-types-desc">Add or remove custom class types for scheduling in the system.</p>
+                        
+                        <!-- Class Types Table -->
+                        <div class="table-container" style="box-shadow: none; border: 1px solid var(--border-color); margin-bottom: 1.5rem; background: rgba(0,0,0,0.1);">
+                            <table class="data-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th id="th-ct-name">Class Type Name</th>
+                                        <th id="th-ct-capacity">Default Capacity</th>
+                                        <th id="th-ct-actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-class-types-table-body">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Add Class Type form -->
+                        <div style="display: flex; gap: 1rem; align-items: flex-end; background: rgba(255,255,255,0.01); border: 1px dashed var(--border-color); padding: 1.25rem; border-radius: var(--radius-md); flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 2; min-width: 200px; margin-bottom: 0;">
+                                <label for="new-ct-name" style="font-size: 0.8rem;" id="lbl-new-ct-name">New Class Type Name</label>
+                                <input type="text" id="new-ct-name" placeholder="e.g. Yoga, Pilates" style="padding: 0.5rem; margin-top: 0.25rem;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 100px; margin-bottom: 0;">
+                                <label for="new-ct-capacity" style="font-size: 0.8rem;" id="lbl-new-ct-capacity">Default Capacity</label>
+                                <input type="number" id="new-ct-capacity" min="1" value="5" style="padding: 0.5rem; margin-top: 0.25rem;">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="btn-add-class-type" style="width: auto; padding: 0.5rem 1.5rem; height: 38px;">
+                                <i class="fa-solid fa-plus"></i> <span id="lbl-btn-add-ct">Add</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -729,7 +768,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- JS Application Scripts -->
-    <script src="app.js"></script>
+    <script src="app.js?v=4"></script>
 </body>
 
 </html>

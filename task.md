@@ -8,4 +8,10 @@
 - `[x]` Implement Group Class participant count status (Pending if < 2, Confirmed if >= 2)
 - `[x]` Create Admin settings tab in index.html and app.js to edit pricing and conditions
 - `[x]` Implement Interactive Monthly Calendar UI for Student and Trainer views (with date filtering)
+- `[x]` Swap Available Class to green and Your Booking to blue color coding on calendar
+- `[x]` Fix javascript initialization error in applyLanguage() to ensure calendar displays immediately on login
+- `[x]` Create Admin scheduling capabilities (Add, Edit, Delete class sessions)
+- `[x]` Implement dynamic Class Types management in Settings (allowing custom types like Yoga, Pilates)
+- `[x]` Render dynamic filter bar in Student View that displays custom class types dynamically
+- `[x]` Update file documentation (walkthrough.md, implementation_plan.md, task.md) to be completely up-to-date
 - `[x]` Verify implementation using browser subagent
