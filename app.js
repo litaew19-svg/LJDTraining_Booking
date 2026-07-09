@@ -3032,7 +3032,7 @@ document.getElementById("btn-add-class-type").addEventListener("click", () => {
 // ==========================================
 // 12. GOOGLE SHEETS CLOUD SYNC
 // ==========================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPgMuiRcN_Gb2m3wDDJ8Dg7VOTJAlWmbGyBiv1y6TgnUmrcUNj_PkaYk7hQema644G/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxceyCSsZdeMXnhNOB8nkdYFuS0JU2R_QLViBuvjgHruCVjK1YpitMdqHemF44CKGzV/exec";
 
 function saveData() {
     const allData = {
