@@ -3032,70 +3032,63 @@ document.getElementById("btn-add-class-type").addEventListener("click", () => {
 // ==========================================
 // 12. GOOGLE SHEETS CLOUD SYNC
 // ==========================================
-// 1. นำ Web App URL ที่ก๊อปมาจากข้อที่แล้วมาใส่ตรงนี้
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPgMuiRcN_Gb2m3wDDJ8Dg7VOTJAlWmbGyBiv1y6TgnUmrcUNj_PkaYk7hQema644G/exec";
 
-// 2. ปรับฟังก์ชัน saveData() เดิมของคุณให้ยิงข้อมูลขึ้น Google Sheets
 function saveData() {
-    // เซฟลงระบบ Local Storage ในเครื่องตามเดิมเพื่อทำเป็น Cache สำรองข้อมูลความเร็วสูง
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('sessions', JSON.stringify(sessions));
-    localStorage.setItem('bookings', JSON.stringify(bookings));
-    localStorage.setItem('studentPackages', JSON.stringify(studentPackages));
-
-    // รวบรวมข้อมูลทั้งหมดส่งขึ้น Google Sheets คลังกลางข้อมูล
     const allData = {
         action: "saveData",
         payload: {
-            users: users,
-            sessions: sessions,
-            bookings: bookings,
-            studentPackages: studentPackages
+            users: db.users.list(),
+            sessions: db.sessions.list(),
+            bookings: db.bookings.list(),
+            studentPackages: db.packages.list()
         }
     };
 
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // ใช้ no-cors หลีกเลี่ยงข้อจำกัดการรับส่งของบราวเซอร์บนหน้าเว็บ静态
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain;charset=utf-8"
         },
         body: JSON.stringify(allData)
     })
-    .then(() => {
-        console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
-    })
-    .catch(error => {
-        console.error("เกิดข้อผิดพลาดในการซิงค์ฐานข้อมูล:", error);
-    });
+        .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+            console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
+        })
+        .catch(error => {
+            console.error("เกิดข้อผิดพลาดในการซิงค์ฐานข้อมูล:", error);
+        });
 }
 
-// 3. ฟังก์ชันดึงข้อมูลจาก Cloud สำหรับใช้ตอนเริ่มโหลดหน้าเว็บใหม่ข้ามเครื่อง
-// แนะนำให้คุณใส่ฟังก์ชันนี้ไว้บรรทัดแรกๆ ของไฟล์ หรือจุดเริ่มต้นที่แอปโหลดตัวแปร
-function loadDataFromCloud() {
+window.loadDataFromCloud = function () {
+    isCloudLoading = true;
     return fetch(GOOGLE_SCRIPT_URL)
         .then(response => response.json())
         .then(data => {
             if (data && !data.error) {
-                // หากในตารางคลังกลางมีข้อมูล ให้นำมาโหลดแสดงผลในตัวแปรระบบ
-                if (Object.keys(data.users).length > 0) users = data.users;
-                if (Object.keys(data.sessions).length > 0) sessions = data.sessions;
-                if (Object.keys(data.bookings).length > 0) bookings = data.bookings;
-                if (Object.keys(data.studentPackages).length > 0) studentPackages = data.studentPackages;
-                
+                if (data.users && Object.keys(data.users).length > 0) {
+                    db.users.save(data.users);
+                }
+                if (data.sessions && Object.keys(data.sessions).length > 0) {
+                    db.sessions.save(data.sessions);
+                }
+                if (data.bookings && Object.keys(data.bookings).length > 0) {
+                    db.bookings.save(data.bookings);
+                }
+                if (data.studentPackages && Object.keys(data.studentPackages).length > 0) {
+                    db.packages.save(data.studentPackages);
+                }
+
                 console.log("ดาวน์โหลดข้อมูลฐานข้อมูลล่าสุดเรียบร้อย");
-                
-                // หลังจากโหลดข้อมูลใหม่เข้ามาแล้ว ให้รันฟังก์ชันแสดงผลอัปเดตหน้าเว็บของคุณ (ถ้ามี)
-                // ตัวอย่างเช่น: updateUI() หรือ renderTables()
             }
+            isCloudLoading = false;
         })
         .catch(error => {
+            isCloudLoading = false;
             console.warn("ไม่สามารถดึงข้อมูลจากคลาวด์ได้ กำลังใช้ข้อมูลเก่าในเครื่องสำรอง:", error);
         });
-}
-
-// เรียกใช้งานตอนเปิดหน้าเว็บครั้งแรกสุด
-loadDataFromCloud();
+};
 
 // ==========================================
 // 13. INITIALIZATION RUN
