@@ -455,9 +455,18 @@ const defaultSettings = {
     PT_Price_20: 1350
 };
 
+let isCloudLoading = false;
+
 const db = {
     get: (key) => JSON.parse(localStorage.getItem(`LJD_pt_${key}`)),
-    set: (key, data) => localStorage.setItem(`LJD_pt_${key}`, JSON.stringify(data)),
+    set: (key, data) => {
+        localStorage.setItem(`LJD_pt_${key}`, JSON.stringify(data));
+        if (!isCloudLoading && ["users", "sessions", "bookings", "packages"].includes(key)) {
+            if (typeof saveData === "function") {
+                saveData();
+            }
+        }
+    },
 
     init: (force = false) => {
         if (force || !localStorage.getItem("LJD_pt_users")) {
@@ -3021,6 +3030,74 @@ document.getElementById("btn-add-class-type").addEventListener("click", () => {
 });
 
 // ==========================================
+// 12. GOOGLE SHEETS CLOUD SYNC
+// ==========================================
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPgMuiRcN_Gb2m3wDDJ8Dg7VOTJAlWmbGyBiv1y6TgnUmrcUNj_PkaYk7hQema644G/exec";
+
+function saveData() {
+    const allData = {
+        action: "saveData",
+        payload: {
+            users: db.users.list(),
+            sessions: db.sessions.list(),
+            bookings: db.bookings.list(),
+            studentPackages: db.packages.list()
+        }
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(allData)
+    })
+    .then(() => {
+        console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
+    })
+    .catch(error => {
+        console.error("เกิดข้อผิดพลาดในการซิงค์ฐานข้อมูล:", error);
+    });
+}
+
+window.loadDataFromCloud = function () {
+    isCloudLoading = true;
+    return fetch(GOOGLE_SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+            if (data && !data.error) {
+                if (data.users && Object.keys(data.users).length > 0) {
+                    db.users.save(data.users);
+                }
+                if (data.sessions && Object.keys(data.sessions).length > 0) {
+                    db.sessions.save(data.sessions);
+                }
+                if (data.bookings && Object.keys(data.bookings).length > 0) {
+                    db.bookings.save(data.bookings);
+                }
+                if (data.studentPackages && Object.keys(data.studentPackages).length > 0) {
+                    db.packages.save(data.studentPackages);
+                }
+                
+                console.log("ดาวน์โหลดข้อมูลฐานข้อมูลล่าสุดเรียบร้อย");
+            }
+            isCloudLoading = false;
+        })
+        .catch(error => {
+            isCloudLoading = false;
+            console.warn("ไม่สามารถดึงข้อมูลจากคลาวด์ได้ กำลังใช้ข้อมูลเก่าในเครื่องสำรอง:", error);
+        });
+};
+
+// ==========================================
 // 13. INITIALIZATION RUN
 // ==========================================
-applyLanguage(); // Boot application
+// Boot immediately using cached local data
+applyLanguage();
+
+// Fetch fresh data from cloud and refresh the application UI when loaded
+window.loadDataFromCloud().then(() => {
+    applyLanguage();
+    renderCurrentView();
+});
