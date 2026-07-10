@@ -628,7 +628,7 @@ function checkAuthUI() {
         authScreen.style.display = "none";
         mainAppContainer.style.display = "block";
         userStatusBox.style.display = "flex";
-        
+
         let roleLabelText = getT(state.currentUser.Role.toLowerCase());
         document.getElementById("user-display-name").textContent = `${state.currentUser.Name} (${roleLabelText})`;
 
@@ -674,7 +674,7 @@ function applyLanguage() {
     if (ptCreditsTitleEl) ptCreditsTitleEl.textContent = getT("ptCreditsTitle");
     const groupCreditsTitleEl = document.getElementById("lbl-student-group-credits-title");
     if (groupCreditsTitleEl) groupCreditsTitleEl.textContent = getT("groupCreditsTitle");
-    
+
     document.getElementById("lbl-next-session-title").textContent = getT("nextSession");
     document.getElementById("lbl-available-sessions-title").textContent = getT("bookSessionTitle");
     const btnFilterAll = document.getElementById("btn-filter-all");
@@ -716,12 +716,12 @@ function applyLanguage() {
 
     document.getElementById("lbl-manage-students-title").textContent = getT("manageStudents");
     document.getElementById("lbl-btn-add-student").textContent = getT("addStudentBtn");
-    
+
     const btnAdminAddSession = document.getElementById("lbl-btn-admin-add-session");
     if (btnAdminAddSession) {
         btnAdminAddSession.textContent = getT("createSessionBtn");
     }
-    
+
     document.getElementById("lbl-manage-requests-title").textContent = getT("lblManageRequestsTitle");
     document.getElementById("th-req-student").textContent = getT("thReqStudent");
     document.getElementById("th-req-type").textContent = getT("thReqType");
@@ -849,7 +849,7 @@ function renderStudentView() {
 
     // Load student package
     const pkg = db.packages.getByStudent(state.currentStudentId);
-    
+
     // PT credits
     const remSlots = pkg ? (pkg.Remaining_Slots !== undefined ? pkg.Remaining_Slots : 0) : 0;
     const totSlots = pkg ? (pkg.Total_Slots !== undefined ? pkg.Total_Slots : 0) : 0;
@@ -858,7 +858,7 @@ function renderStudentView() {
     document.getElementById("student-package-details").textContent = pkg
         ? `${getT("packageIdLbl")}: ${pkg.Package_ID}`
         : `${getT("packageIdLbl")}: None`;
-    
+
     // Group Class credits
     const groupRemSlots = pkg ? (pkg.Group_Remaining_Slots !== undefined ? pkg.Group_Remaining_Slots : 0) : 0;
     const groupTotSlots = pkg ? (pkg.Group_Total_Slots !== undefined ? pkg.Group_Total_Slots : 0) : 0;
@@ -991,7 +991,7 @@ function renderStudentView() {
             buttonsHtml += `<button class="filter-btn ${state.filterStudentSessions === ct.name ? 'active' : ''}" data-filter="${ct.name}" style="width: auto; padding: 0.3rem 1rem; font-size: 0.85rem; margin-left: 0.4rem;">${localizedName}</button>`;
         });
         filterBar.innerHTML = buttonsHtml;
-        
+
         filterBar.querySelectorAll(".filter-btn").forEach(btn => {
             btn.onclick = (e) => {
                 state.filterStudentSessions = e.currentTarget.getAttribute("data-filter");
@@ -1001,7 +1001,11 @@ function renderStudentView() {
     }
 
     const availSessionsList = document.getElementById("student-available-sessions-list");
-    let availableSessions = sessions.filter(s => s.Status !== "Finished");
+    let availableSessions = sessions.filter(s => {
+        if (s.Status === "Finished") return false;
+        const alreadyBooked = bookings.some(b => b.Session_ID === s.Session_ID);
+        return alreadyBooked || s.Status === "Available";
+    });
 
     // Filter by calendar date
     if (state.selectedDateStr) {
@@ -1380,7 +1384,7 @@ function renderAdminView() {
                 const studentName = student ? student.Name : `Unknown Student (${req.Student_ID})`;
                 const typeLabel = req.Type === "pt" ? "1-on-1 PT" : (state.language === "zh-tw" ? "團體課" : "Group Class");
                 const typeColor = req.Type === "pt" ? "var(--primary-color)" : "#34d399";
-                
+
                 let statusBadge = "";
                 if (req.Status === "Pending") {
                     statusBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.2rem 0.5rem; border-radius: 4px;">Pending</span>`;
@@ -1455,12 +1459,12 @@ function renderAdminClassTypes() {
     if (!tbody) return;
 
     tbody.innerHTML = classTypes.map(ct => {
-        const deleteButton = ct.isSystem 
+        const deleteButton = ct.isSystem
             ? `<span style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">${state.language === 'zh-tw' ? '系統鎖定' : 'System Locked'}</span>`
             : `<button class="btn btn-danger btn-sm" onclick="deleteClassTypeAction('${ct.id}')" title="${state.language === 'zh-tw' ? '刪除此類別' : 'Delete Type'}">
                   <i class="fa-solid fa-trash-can"></i>
                </button>`;
-        
+
         return `
             <tr>
                 <td><strong>${ct.id}</strong></td>
@@ -1622,7 +1626,7 @@ function closeModal(id) {
 }
 
 // modal: Create Session setup
-window.openCreateSessionModal = function() {
+window.openCreateSessionModal = function () {
     state.editingSessionId = null;
 
     // Set trainers choices dynamically
@@ -1630,7 +1634,7 @@ window.openCreateSessionModal = function() {
     const trainers = db.users.list().filter(u => u.Role === "Trainer");
 
     selectTrainer.innerHTML = trainers.map(t => `<option value="${t.User_ID}">${t.Name}</option>`).join("");
-    
+
     // Set default trainer
     if (state.currentUser && state.currentUser.Role === "Trainer") {
         selectTrainer.value = state.currentTrainerId;
@@ -1741,10 +1745,10 @@ document.getElementById("form-create-session").addEventListener("submit", (e) =>
         const sessionIndex = sessions.findIndex(s => s.Session_ID === state.editingSessionId);
         if (sessionIndex !== -1) {
             const session = sessions[sessionIndex];
-            
+
             const confirmedBookings = db.bookings.filterBySession(state.editingSessionId);
             const activeBookingsCount = confirmedBookings.length;
-            
+
             if (capacity < activeBookingsCount) {
                 showToast(getT("cannotReduceCapacityBelowBookings"), "error");
                 return;
@@ -1770,7 +1774,7 @@ document.getElementById("form-create-session").addEventListener("submit", (e) =>
 
             db.sessions.save(sessions);
             showToast(getT("sessionUpdatedSuccess"), "success");
-            
+
             state.editingSessionId = null;
             // Enable fields again
             document.getElementById("session-trainer").disabled = false;
@@ -1884,7 +1888,7 @@ window.deleteSessionAction = function (sessionId) {
 
     // Find bookings for this session
     const sessionBookings = bookings.filter(b => b.Session_ID === sessionId && b.Status === "Confirmed");
-    
+
     if (session.Class_Type === "1 on 1") {
         // Refund credits to student packages
         sessionBookings.forEach(booking => {
@@ -1962,7 +1966,7 @@ document.getElementById("btn-open-create-user").addEventListener("click", () => 
     document.getElementById("package-fields").style.display = "block"; // default shown
     document.getElementById("user-role").disabled = false;
     document.getElementById("user-role").value = "Student";
-    
+
     // Configure password field for new user creation
     document.getElementById("user-password").required = true;
     document.getElementById("user-password").placeholder = "Min 4 characters";
@@ -2120,7 +2124,7 @@ window.openEditUserModal = function (userId) {
     document.getElementById("user-email").value = user.Email;
     document.getElementById("user-phone").value = user.Phone || "";
     document.getElementById("user-role").value = user.Role;
-    
+
     // Configure password field for edit mode
     document.getElementById("user-password").required = false;
     document.getElementById("user-password").value = "";
@@ -2343,8 +2347,8 @@ window.openBuyPackageModal = function (type) {
             else if (slots === 20) totalCost = settings.PT_Price_20 * 20;
         } else if (type === "group") {
             // Check trial qualification
-            const groupBookingsCount = db.bookings.list().filter(b => 
-                b.Student_ID === state.currentStudentId && 
+            const groupBookingsCount = db.bookings.list().filter(b =>
+                b.Student_ID === state.currentStudentId &&
                 b.Status === "Confirmed"
             ).length;
 
@@ -2356,8 +2360,8 @@ window.openBuyPackageModal = function (type) {
             } else if (val === "1_normal") {
                 totalCost = settings.Group_Normal_Price;
             } else if (val === "5") {
-                totalCost = isTrial 
-                    ? (settings.Group_Trial_Price + 4 * settings.Group_Normal_Price) 
+                totalCost = isTrial
+                    ? (settings.Group_Trial_Price + 4 * settings.Group_Normal_Price)
                     : (5 * settings.Group_Normal_Price);
             } else if (val === "5_normal") {
                 totalCost = 5 * settings.Group_Normal_Price;
@@ -2394,8 +2398,8 @@ window.openBuyPackageModal = function (type) {
         typeText.style.color = "#34d399";
 
         // Check trial qualification
-        const groupBookingsCount = db.bookings.list().filter(b => 
-            b.Student_ID === state.currentStudentId && 
+        const groupBookingsCount = db.bookings.list().filter(b =>
+            b.Student_ID === state.currentStudentId &&
             b.Status === "Confirmed"
         ).length;
         const isTrial = (groupBookingsCount === 0);
@@ -2479,8 +2483,8 @@ document.getElementById("form-buy-package").addEventListener("submit", (e) => {
         else if (slots === 10) totalCost = settings.PT_Price_10 * 10;
         else if (slots === 20) totalCost = settings.PT_Price_20 * 20;
     } else {
-        const groupBookingsCount = db.bookings.list().filter(b => 
-            b.Student_ID === state.currentStudentId && 
+        const groupBookingsCount = db.bookings.list().filter(b =>
+            b.Student_ID === state.currentStudentId &&
             b.Status === "Confirmed"
         ).length;
         const isTrial = (groupBookingsCount === 0);
@@ -2654,86 +2658,86 @@ document.getElementById("btn-db-reset").addEventListener("click", () => {
 function renderCalendar(viewType, dateObj) {
     const gridId = `${viewType}-calendar-grid`;
     const monthYearId = `${viewType}-cal-month-year`;
-    
+
     const gridContainer = document.getElementById(gridId);
     const monthYearDisplay = document.getElementById(monthYearId);
     if (!gridContainer || !monthYearDisplay) return;
-    
+
     gridContainer.innerHTML = "";
-    
+
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
-    
+
     // Set Header Month Year
     const monthNamesEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const monthNamesZh = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-    
+
     if (state.language === "zh-tw") {
         monthYearDisplay.textContent = `${year}年 ${monthNamesZh[month]}`;
     } else {
         monthYearDisplay.textContent = `${monthNamesEn[month]} ${year}`;
     }
-    
+
     // Day Headers
     const daysHeaderEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const daysHeaderZh = ["日", "一", "二", "三", "四", "五", "六"];
     const headers = state.language === "zh-tw" ? daysHeaderZh : daysHeaderEn;
-    
+
     headers.forEach(h => {
         const headerCell = document.createElement("div");
         headerCell.className = "calendar-cell header-cell";
         headerCell.textContent = h;
         gridContainer.appendChild(headerCell);
     });
-    
+
     // First day of month
     const firstDay = new Date(year, month, 1).getDay();
     // Number of days in month
     const numDays = new Date(year, month + 1, 0).getDate();
-    
+
     // Preceding empty cells
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement("div");
         emptyCell.className = "calendar-cell empty-cell";
         gridContainer.appendChild(emptyCell);
     }
-    
+
     // Day cells
     const today = new Date();
     const sessions = db.sessions.list();
     const bookings = db.bookings.list();
-    
+
     for (let day = 1; day <= numDays; day++) {
         const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
+
         const cell = document.createElement("div");
         cell.className = "calendar-cell";
-        
+
         // Highlight today
         if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day) {
             cell.classList.add("today-cell");
         }
-        
+
         // Highlight selected
         if (state.selectedDateStr === cellDateStr) {
             cell.classList.add("selected-cell");
         }
-        
+
         // Add Day number
         const dayNum = document.createElement("span");
         dayNum.className = "cell-day-num";
         dayNum.textContent = day;
         cell.appendChild(dayNum);
-        
+
         // Find sessions on this day
         const daySessions = sessions.filter(s => s.Date === cellDateStr && s.Status !== "Finished");
         const dotsContainer = document.createElement("div");
         dotsContainer.className = "cell-dots-container";
-        
+
         if (viewType === "student") {
             let hasAvailable = false;
             let hasBooked = false;
-            
+
             daySessions.forEach(s => {
                 const isBooked = bookings.some(b => b.Session_ID === s.Session_ID && b.Student_ID === state.currentStudentId && b.Status === "Confirmed");
                 if (isBooked) {
@@ -2742,7 +2746,7 @@ function renderCalendar(viewType, dateObj) {
                     hasAvailable = true;
                 }
             });
-            
+
             if (hasBooked && hasAvailable) {
                 cell.classList.add("cell-has-both");
             } else if (hasBooked) {
@@ -2773,9 +2777,9 @@ function renderCalendar(viewType, dateObj) {
                 dotsContainer.appendChild(dot);
             }
         }
-        
+
         cell.appendChild(dotsContainer);
-        
+
         // Day Cell Click listener
         cell.addEventListener("click", () => {
             if (state.selectedDateStr === cellDateStr) {
@@ -2785,13 +2789,13 @@ function renderCalendar(viewType, dateObj) {
             }
             renderCurrentView();
         });
-        
+
         gridContainer.appendChild(cell);
     }
 }
 
 // Clear Date Filter Action
-window.clearDateFilter = function() {
+window.clearDateFilter = function () {
     state.selectedDateStr = "";
     renderCurrentView();
 };
@@ -2839,7 +2843,7 @@ formLogin.addEventListener("submit", (e) => {
     e.preventDefault();
     const identifier = document.getElementById("login-identifier").value.trim();
     const password = document.getElementById("login-password").value;
-    
+
     if (!identifier) {
         showToast(getT("invalidEmail"), "error");
         return;
@@ -2857,7 +2861,7 @@ formLogin.addEventListener("submit", (e) => {
 
         state.currentUser = user;
         state.role = user.Role.toLowerCase();
-        
+
         if (state.role === "student") {
             state.currentStudentId = user.User_ID;
             document.querySelectorAll(".role-btn").forEach(b => {
@@ -2906,7 +2910,7 @@ formRegister.addEventListener("submit", (e) => {
     }
 
     const users = db.users.list();
-    
+
     // Check if email or phone already exists
     const exists = users.some(u => u.Email === email || u.Phone === phone);
     if (exists) {
@@ -2954,13 +2958,13 @@ formRegister.addEventListener("submit", (e) => {
     document.getElementById("view-student").classList.add("active");
 
     showToast(state.language === "zh-tw" ? "註冊成功並已登入！" : "Registered and logged in successfully!", "success");
-    
+
     // Clear registration inputs
     document.getElementById("register-name").value = "";
     document.getElementById("register-email").value = "";
     document.getElementById("register-phone").value = "";
     document.getElementById("register-password").value = "";
-    
+
     // Reset tabs
     tabLoginBtn.click();
 
@@ -3053,7 +3057,7 @@ function saveData() {
         body: JSON.stringify(allData)
     })
         .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Network response was not ok');
             console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
         })
         .catch(error => {
