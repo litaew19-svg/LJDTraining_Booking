@@ -469,7 +469,10 @@ const db = {
     },
 
     init: (force = false) => {
-        if (force || !localStorage.getItem("LJD_pt_users")) {
+        const needsInit = force || !localStorage.getItem("LJD_pt_users");
+        if (needsInit) {
+            const temp = isCloudLoading;
+            isCloudLoading = true;
             db.set("users", defaultUsers);
             db.set("sessions", defaultSessions);
             db.set("bookings", defaultBookings);
@@ -477,15 +480,11 @@ const db = {
             db.set("settings", defaultSettings);
             db.set("purchase_requests", defaultPurchaseRequests);
             db.set("class_types", defaultClassTypes);
-        }
-        if (!localStorage.getItem("LJD_pt_settings")) {
-            db.set("settings", defaultSettings);
-        }
-        if (!localStorage.getItem("LJD_pt_purchase_requests")) {
-            db.set("purchase_requests", defaultPurchaseRequests);
-        }
-        if (!localStorage.getItem("LJD_pt_class_types")) {
-            db.set("class_types", defaultClassTypes);
+            isCloudLoading = temp;
+
+            if (force && typeof saveData === "function") {
+                saveData();
+            }
         }
     },
 
