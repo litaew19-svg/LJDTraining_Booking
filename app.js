@@ -490,7 +490,10 @@ const db = {
     },
 
     classTypes: {
-        list: () => db.get("class_types") || defaultClassTypes,
+        list: () => {
+            const val = db.get("class_types");
+            return Array.isArray(val) ? val : defaultClassTypes;
+        },
         save: (list) => db.set("class_types", list),
         get: (id) => db.classTypes.list().find(ct => ct.id === id),
         add: (name, defaultCapacity) => {
@@ -513,29 +516,44 @@ const db = {
     },
 
     users: {
-        list: () => db.get("users") || [],
+        list: () => {
+            const val = db.get("users");
+            return Array.isArray(val) ? val : [];
+        },
         save: (list) => db.set("users", list),
         get: (id) => db.users.list().find(u => u.User_ID === id)
     },
     sessions: {
-        list: () => db.get("sessions") || [],
+        list: () => {
+            const val = db.get("sessions");
+            return Array.isArray(val) ? val : [];
+        },
         save: (list) => db.set("sessions", list),
         get: (id) => db.sessions.list().find(s => s.Session_ID === id)
     },
     bookings: {
-        list: () => db.get("bookings") || [],
+        list: () => {
+            const val = db.get("bookings");
+            return Array.isArray(val) ? val : [];
+        },
         save: (list) => db.set("bookings", list),
         get: (id) => db.bookings.list().find(b => b.Booking_ID === id),
         filterBySession: (sessionId) => db.bookings.list().filter(b => b.Session_ID === sessionId && b.Status === "Confirmed"),
         filterByStudent: (studentId) => db.bookings.list().filter(b => b.Student_ID === studentId)
     },
     packages: {
-        list: () => db.get("packages") || [],
+        list: () => {
+            const val = db.get("packages");
+            return Array.isArray(val) ? val : [];
+        },
         save: (list) => db.set("packages", list),
         getByStudent: (studentId) => db.packages.list().find(p => p.Student_ID === studentId)
     },
     purchaseRequests: {
-        list: () => db.get("purchase_requests") || [],
+        list: () => {
+            const val = db.get("purchase_requests");
+            return Array.isArray(val) ? val : [];
+        },
         save: (list) => db.set("purchase_requests", list),
         get: (id) => db.purchaseRequests.list().find(r => r.Request_ID === id)
     },
