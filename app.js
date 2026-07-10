@@ -2867,11 +2867,16 @@ formLogin.addEventListener("submit", (e) => {
     }
 
     const users = db.users.list();
-    const user = users.find(u => u.Email === identifier || u.Phone === identifier);
+    const user = users.find(u => {
+        const uEmail = u.Email ? String(u.Email).trim().toLowerCase() : "";
+        const uPhone = u.Phone ? String(u.Phone).trim() : "";
+        const searchId = identifier.toLowerCase();
+        return uEmail === searchId || uPhone === searchId;
+    });
 
     if (user) {
-        const userPassword = user.Password || "123";
-        if (userPassword !== password) {
+        const userPassword = user.Password !== undefined && user.Password !== null ? String(user.Password).trim() : "123";
+        if (userPassword !== String(password).trim()) {
             showToast(getT("passwordWrong"), "error");
             return;
         }
@@ -2929,7 +2934,11 @@ formRegister.addEventListener("submit", (e) => {
     const users = db.users.list();
 
     // Check if email or phone already exists
-    const exists = users.some(u => u.Email === email || u.Phone === phone);
+    const exists = users.some(u => {
+        const uEmail = u.Email ? String(u.Email).trim().toLowerCase() : "";
+        const uPhone = u.Phone ? String(u.Phone).trim() : "";
+        return uEmail === email.toLowerCase() || uPhone === phone;
+    });
     if (exists) {
         showToast(state.language === "zh-tw" ? "該信箱或電話已被註冊！" : "Email or Phone already registered!", "error");
         return;
