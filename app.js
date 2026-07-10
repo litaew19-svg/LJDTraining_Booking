@@ -517,7 +517,7 @@ const db = {
     users: {
         list: () => {
             const val = db.get("users");
-            return Array.isArray(val) ? val : [];
+            return Array.isArray(val) && val.length > 0 ? val : defaultUsers;
         },
         save: (list) => db.set("users", list),
         get: (id) => db.users.list().find(u => u.User_ID === id)
@@ -525,7 +525,7 @@ const db = {
     sessions: {
         list: () => {
             const val = db.get("sessions");
-            return Array.isArray(val) ? val : [];
+            return Array.isArray(val) ? val : defaultSessions;
         },
         save: (list) => db.set("sessions", list),
         get: (id) => db.sessions.list().find(s => s.Session_ID === id)
@@ -533,7 +533,7 @@ const db = {
     bookings: {
         list: () => {
             const val = db.get("bookings");
-            return Array.isArray(val) ? val : [];
+            return Array.isArray(val) ? val : defaultBookings;
         },
         save: (list) => db.set("bookings", list),
         get: (id) => db.bookings.list().find(b => b.Booking_ID === id),
@@ -543,7 +543,7 @@ const db = {
     packages: {
         list: () => {
             const val = db.get("packages");
-            return Array.isArray(val) ? val : [];
+            return Array.isArray(val) ? val : defaultPackages;
         },
         save: (list) => db.set("packages", list),
         getByStudent: (studentId) => db.packages.list().find(p => p.Student_ID === studentId)
