@@ -2846,6 +2846,9 @@ tabLoginBtn.addEventListener("click", () => {
     tabRegisterBtn.classList.remove("active");
     formLogin.classList.add("active");
     formRegister.classList.remove("active");
+    document.getElementById("login-error").textContent = "";
+    document.getElementById("login-identifier").value = "";
+    document.getElementById("login-password").value = "";
 });
 
 tabRegisterBtn.addEventListener("click", () => {
@@ -2853,6 +2856,11 @@ tabRegisterBtn.addEventListener("click", () => {
     tabLoginBtn.classList.remove("active");
     formRegister.classList.add("active");
     formLogin.classList.remove("active");
+    document.getElementById("login-error").textContent = "";
+    document.getElementById("register-name").value = "";
+    document.getElementById("register-email").value = "";
+    document.getElementById("register-phone").value = "";
+    document.getElementById("register-password").value = "";
 });
 
 // Submit Login Form
@@ -2863,6 +2871,7 @@ formLogin.addEventListener("submit", (e) => {
 
     if (!identifier) {
         showToast(getT("invalidEmail"), "error");
+        document.getElementById("login-error").textContent = getT("invalidEmail");
         return;
     }
 
@@ -2878,8 +2887,12 @@ formLogin.addEventListener("submit", (e) => {
         const userPassword = user.Password !== undefined && user.Password !== null ? String(user.Password).trim() : "123";
         if (userPassword !== String(password).trim()) {
             showToast(getT("passwordWrong"), "error");
+            document.getElementById("login-error").textContent = getT("passwordWrong");
             return;
         }
+
+        // Clear any previous error message
+        document.getElementById("login-error").textContent = "";
 
         state.currentUser = user;
         state.role = user.Role.toLowerCase();
@@ -2915,6 +2928,7 @@ formLogin.addEventListener("submit", (e) => {
         applyLanguage();
     } else {
         showToast(getT("loginFailed"), "error");
+        document.getElementById("login-error").textContent = getT("loginFailed");
     }
 });
 
@@ -3068,7 +3082,10 @@ function saveData() {
     const allData = {
         action: "saveData",
         payload: {
-            users: db.users.list(),
+            users: db.users.list().map(u => ({
+                ...u,
+                Username: u.Username || u.Email || ""
+            })),
             sessions: db.sessions.list(),
             bookings: db.bookings.list(),
             studentPackages: db.packages.list()
@@ -3098,7 +3115,17 @@ window.loadDataFromCloud = function () {
         .then(data => {
             if (data && !data.error) {
                 if (data.users && Object.keys(data.users).length > 0) {
-                    db.users.save(data.users);
+                    const mappedUsers = data.users.map(u => {
+                        const defaultUser = defaultUsers.find(du => du.User_ID === u.User_ID);
+                        if (defaultUser) {
+                            u.Email = u.Email || u.Username || defaultUser.Email;
+                            u.Password = u.Password || defaultUser.Password;
+                        } else {
+                            u.Email = u.Email || u.Username || "";
+                        }
+                        return u;
+                    });
+                    db.users.save(mappedUsers);
                 }
                 if (data.sessions && Object.keys(data.sessions).length > 0) {
                     db.sessions.save(data.sessions);
@@ -3113,6 +3140,8 @@ window.loadDataFromCloud = function () {
                 console.log("ดาวน์โหลดข้อมูลฐานข้อมูลล่าสุดเรียบร้อย");
             }
             isCloudLoading = false;
+            // Sync default fallback user fields back to the cloud
+            saveData();
         })
         .catch(error => {
             isCloudLoading = false;
