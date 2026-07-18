@@ -1754,3 +1754,15 @@ body:has(#lang-select option[value="zh-tw"]:checked) {
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
+/* =============================================================
+ * BOOKING CONFIRMATION & CAPTCHA STYLING
+ * ============================================================= */
+.booking-confirm-info {
+    border-left: 4px solid var(--primary-color);
+}
+
+#turnstile-container {
+    display: inline-block;
+    margin: 0 auto;
+}

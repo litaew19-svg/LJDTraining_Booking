@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Cloudflare Turnstile CAPTCHA (Explicit Render) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 
 <body>
@@ -478,6 +480,20 @@
                                     <label for="settings-pt-20" id="lbl-set-pt-20">20 Classes Package Price / Class (NT)</label>
                                     <input type="number" id="settings-pt-20" min="0" required>
                                 </div>
+                        <div class="settings-group-card" style="margin-top: 1.5rem;">
+                            <h4 id="lbl-settings-security-title"><i class="fa-solid fa-shield-halved"></i> Security & Anti-Spam Settings</h4>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2; min-width: 250px;">
+                                    <label for="settings-turnstile-sitekey" id="lbl-set-turnstile-sitekey">Cloudflare Turnstile Site Key</label>
+                                    <input type="text" id="settings-turnstile-sitekey" placeholder="e.g. 1x00000000000000000000AA">
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 150px;">
+                                    <label for="settings-turnstile-enabled" id="lbl-set-turnstile-enabled">Enable CAPTCHA on Booking</label>
+                                    <select id="settings-turnstile-enabled" style="width: 100%; padding: 0.6rem; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main);">
+                                        <option value="true">Enabled</option>
+                                        <option value="false">Disabled</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         
@@ -761,6 +777,34 @@
                         <button type="submit" class="btn btn-primary" id="lbl-btn-submit-buy-package"><i class="fa-solid fa-credit-card"></i> Pay & Add Credits</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Booking Confirmation & CAPTCHA (Student View) -->
+    <div class="modal-overlay" id="modal-booking-confirm">
+        <div class="modal-container modal-sm">
+            <div class="modal-header">
+                <h3 id="lbl-booking-confirm-title">Confirm Booking</h3>
+                <button class="btn-close" id="btn-close-booking-confirm" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="booking-confirm-info" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm); border: 1px solid var(--border-color); line-height: 1.6;">
+                    <p style="margin: 0;"><strong><span id="lbl-confirm-class-type-tag">Class Type</span>:</strong> <span id="confirm-class-type" style="color: var(--primary-color);">Group Class</span></p>
+                    <p style="margin: 0;"><strong><span id="lbl-confirm-date-tag">Date</span>:</strong> <span id="confirm-class-date">2026-07-17</span></p>
+                    <p style="margin: 0;"><strong><span id="lbl-confirm-time-tag">Time</span>:</strong> <span id="confirm-class-time">10:00 - 11:00</span></p>
+                    <p style="margin: 0;"><strong><span id="lbl-confirm-trainer-tag">Trainer</span>:</strong> <span id="confirm-class-trainer">Somchai Trainer</span></p>
+                </div>
+                
+                <div id="captcha-container-wrapper" style="margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center; min-height: 80px; flex-direction: column;">
+                    <label id="lbl-captcha-instruction" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; width: 100%;">Please verify you are human to book:</label>
+                    <div id="turnstile-container"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-booking-confirm">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-booking" disabled>Confirm Booking</button>
+                </div>
             </div>
         </div>
     </div>

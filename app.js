@@ -186,6 +186,17 @@ const translations = {
         setPt20: "20 Classes Package Price / Class (NT)",
         btnSaveSettings: "Save Settings",
         settingsUpdatedSuccess: "Pricing settings updated successfully!",
+        lblBookingConfirmTitle: "Confirm Booking",
+        lblConfirmClassType: "Class Type",
+        lblConfirmDate: "Date",
+        lblConfirmTime: "Time",
+        lblConfirmTrainer: "Trainer",
+        lblCaptchaInstruction: "Please verify you are human to book:",
+        btnConfirmBooking: "Confirm Booking",
+        btnCancel: "Cancel",
+        settingsSecurityTitle: "Security & Anti-Spam Settings",
+        setTurnstileSiteKey: "Cloudflare Turnstile Site Key",
+        setTurnstileEnabled: "Enable CAPTCHA on Booking",
 
         // Calendar & Legend
         studentCalendarTitle: "Monthly Class Calendar",
@@ -376,6 +387,17 @@ const translations = {
         setPt20: "20 堂私人課 package 單價 (NT)",
         btnSaveSettings: "儲存設定",
         settingsUpdatedSuccess: "費率設定已成功更新！",
+        lblBookingConfirmTitle: "確認預約",
+        lblConfirmClassType: "課程類型",
+        lblConfirmDate: "日期",
+        lblConfirmTime: "時間",
+        lblConfirmTrainer: "教練",
+        lblCaptchaInstruction: "請進行驗證以完成預約：",
+        btnConfirmBooking: "確認預約",
+        btnCancel: "取消",
+        settingsSecurityTitle: "安全性與防垃圾郵件設定",
+        setTurnstileSiteKey: "Cloudflare Turnstile Site Key",
+        setTurnstileEnabled: "啟用預約驗證碼 (CAPTCHA)",
 
         // Calendar & Legend
         studentCalendarTitle: "每月課程行事曆",
@@ -435,7 +457,9 @@ let state = {
     calendarDate: new Date(), // Selected month in calendar
     selectedDateStr: "", // Filter sessions list by specific date (e.g. "2026-07-10")
     editingSessionId: null, // Stores the ID of the session currently being edited
-    editingUserId: null // Stores the ID of the user account currently being edited
+    editingUserId: null, // Stores the ID of the user account currently being edited
+    captchaToken: null,
+    turnstileWidgetId: undefined
 };
 
 // ==========================================
@@ -452,7 +476,9 @@ const defaultSettings = {
     Group_Min_Participants: 2,
     PT_Price_1: 1800,
     PT_Price_10: 1450,
-    PT_Price_20: 1350
+    PT_Price_20: 1350,
+    Turnstile_Enabled: false,
+    Turnstile_Site_Key: "1x00000000000000000000AA"
 };
 
 let isCloudLoading = false;
@@ -796,6 +822,21 @@ function applyLanguage() {
     document.getElementById("lbl-set-pt-10").textContent = getT("setPt10");
     document.getElementById("lbl-set-pt-20").textContent = getT("setPt20");
     document.getElementById("lbl-btn-save-settings").textContent = getT("btnSaveSettings");
+
+    // Security & Turnstile
+    document.getElementById("lbl-settings-security-title").innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${getT("settingsSecurityTitle")}`;
+    document.getElementById("lbl-set-turnstile-sitekey").textContent = getT("setTurnstileSiteKey");
+    document.getElementById("lbl-set-turnstile-enabled").textContent = getT("setTurnstileEnabled");
+
+    // Booking Confirmation Modal
+    document.getElementById("lbl-booking-confirm-title").textContent = getT("lblBookingConfirmTitle");
+    document.getElementById("lbl-confirm-class-type-tag").textContent = getT("lblConfirmClassType");
+    document.getElementById("lbl-confirm-date-tag").textContent = getT("lblConfirmDate");
+    document.getElementById("lbl-confirm-time-tag").textContent = getT("lblConfirmTime");
+    document.getElementById("lbl-confirm-trainer-tag").textContent = getT("lblConfirmTrainer");
+    document.getElementById("lbl-captcha-instruction").textContent = getT("lblCaptchaInstruction");
+    document.getElementById("btn-confirm-booking").textContent = getT("btnConfirmBooking");
+    document.getElementById("btn-cancel-booking-confirm").textContent = getT("btnCancel");
 
     // Modals & Form fields translation
     if (state.editingSessionId) {
@@ -1466,6 +1507,8 @@ function renderAdminView() {
         document.getElementById("settings-pt-1").value = settings.PT_Price_1;
         document.getElementById("settings-pt-10").value = settings.PT_Price_10;
         document.getElementById("settings-pt-20").value = settings.PT_Price_20;
+        document.getElementById("settings-turnstile-sitekey").value = settings.Turnstile_Site_Key || "1x00000000000000000000AA";
+        document.getElementById("settings-turnstile-enabled").value = settings.Turnstile_Enabled ? "true" : "false";
         renderAdminClassTypes();
     }
 }
@@ -1510,6 +1553,7 @@ window.deleteClassTypeAction = function (id) {
 // ==========================================
 
 // Action: Book a session (Student perspective)
+// Action: Book a session (Student perspective) - Shows confirmation modal and CAPTCHA
 window.bookSessionAction = function (sessionId) {
     const sessions = db.sessions.list();
     const session = sessions.find(s => s.Session_ID === sessionId);
@@ -1544,9 +1588,103 @@ window.bookSessionAction = function (sessionId) {
         return;
     }
 
-    // Create new booking
+    // Find trainer name
+    const trainers = db.users.list().filter(u => u.Role === "Trainer");
+    const trainerObj = trainers.find(t => t.User_ID === session.Trainer_ID);
+    const trainerName = trainerObj ? trainerObj.Name : session.Trainer_ID;
+
+    // Open booking confirmation modal
+    const modal = document.getElementById("modal-booking-confirm");
+    document.getElementById("confirm-class-type").textContent = session.Class_Type;
+    document.getElementById("confirm-class-date").textContent = session.Date;
+    document.getElementById("confirm-class-time").textContent = `${session.Start_Time} - ${session.End_Time}`;
+    document.getElementById("confirm-class-trainer").textContent = trainerName;
+
+    // Clear Turnstile state
+    if (state.turnstileWidgetId !== undefined && window.turnstile) {
+        try {
+            turnstile.remove(state.turnstileWidgetId);
+        } catch (e) {}
+        state.turnstileWidgetId = undefined;
+    }
+    state.captchaToken = null;
+
+    const settings = db.settings.get();
+    const btnConfirm = document.getElementById("btn-confirm-booking");
+    const captchaWrapper = document.getElementById("captcha-container-wrapper");
+    const turnstileContainer = document.getElementById("turnstile-container");
+
+    // Clean previous Turnstile rendering element
+    turnstileContainer.innerHTML = "";
+
+    if (settings.Turnstile_Enabled) {
+        captchaWrapper.style.display = "flex";
+        btnConfirm.disabled = true;
+
+        if (window.turnstile) {
+            // Render Turnstile explicitly
+            const div = document.createElement("div");
+            turnstileContainer.appendChild(div);
+            state.turnstileWidgetId = turnstile.render(div, {
+                sitekey: settings.Turnstile_Site_Key || "1x00000000000000000000AA",
+                theme: "dark",
+                callback: function (token) {
+                    state.captchaToken = token;
+                    btnConfirm.disabled = false;
+                },
+                "expired-callback": function () {
+                    state.captchaToken = null;
+                    btnConfirm.disabled = true;
+                },
+                "error-callback": function () {
+                    state.captchaToken = null;
+                    btnConfirm.disabled = true;
+                    showToast(getT("turnstileError") || "Turnstile verification failed. Please try again.", "error");
+                }
+            });
+        } else {
+            showToast("Cloudflare Turnstile is loading, please wait...", "info");
+        }
+    } else {
+        captchaWrapper.style.display = "none";
+        btnConfirm.disabled = false;
+    }
+
+    // Modal action listeners
+    const cleanUpModal = () => {
+        modal.classList.remove("active");
+        if (state.turnstileWidgetId !== undefined && window.turnstile) {
+            try {
+                turnstile.remove(state.turnstileWidgetId);
+            } catch (e) {}
+            state.turnstileWidgetId = undefined;
+        }
+        state.captchaToken = null;
+    };
+
+    document.getElementById("btn-close-booking-confirm").onclick = cleanUpModal;
+    document.getElementById("btn-cancel-booking-confirm").onclick = cleanUpModal;
+
+    btnConfirm.onclick = function () {
+        window.confirmBookingAction(sessionId);
+        cleanUpModal();
+    };
+
+    modal.classList.add("active");
+};
+
+// Sub-Action: Confirm booking after CAPTCHA solved
+window.confirmBookingAction = function (sessionId) {
+    const sessions = db.sessions.list();
+    const session = sessions.find(s => s.Session_ID === sessionId);
+    if (!session) return;
+
+    const packages = db.packages.list();
+    const studentPackage = packages.find(p => p.Student_ID === state.currentStudentId);
+
+    const bookings = db.bookings.list();
     const newBookingId = generateId("B", bookings, "Booking_ID");
-    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
 
     const newBooking = {
         Booking_ID: newBookingId,
@@ -1555,6 +1693,7 @@ window.bookSessionAction = function (sessionId) {
         Booking_Date: timestamp,
         Status: "Confirmed"
     };
+
     bookings.push(newBooking);
     db.bookings.save(bookings);
 
@@ -2531,6 +2670,28 @@ document.getElementById("form-buy-package").addEventListener("submit", (e) => {
     requests.push(newRequest);
     db.purchaseRequests.save(requests);
 
+    // Trigger Admin Email Notification
+    const studentUser = db.users.get(state.currentStudentId);
+    const studentName = studentUser ? studentUser.Name : "Student";
+    const creditTypeLabel = type === "pt" ? "1-on-1 PT Credits" : "Group Class Credits";
+    
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+            action: "sendCreditRequestEmail",
+            payload: {
+                studentName: studentName,
+                creditType: creditTypeLabel,
+                slots: slots,
+                price: totalCost,
+                users: db.users.list()
+            }
+        })
+    }).catch(err => console.error("Error sending credit request notification:", err));
+
     const successMsg = getT("packagePurchasedSuccess");
 
     showToast(successMsg, "success");
@@ -3031,7 +3192,9 @@ document.getElementById("form-pricing-settings").addEventListener("submit", (e) 
         Group_Min_Participants: parseInt(document.getElementById("settings-group-min-users").value) || 2,
         PT_Price_1: parseInt(document.getElementById("settings-pt-1").value) || 0,
         PT_Price_10: parseInt(document.getElementById("settings-pt-10").value) || 0,
-        PT_Price_20: parseInt(document.getElementById("settings-pt-20").value) || 0
+        PT_Price_20: parseInt(document.getElementById("settings-pt-20").value) || 0,
+        Turnstile_Enabled: document.getElementById("settings-turnstile-enabled").value === "true",
+        Turnstile_Site_Key: document.getElementById("settings-turnstile-sitekey").value.trim()
     };
 
     db.settings.save(settings);
@@ -3078,17 +3241,78 @@ document.getElementById("btn-add-class-type").addEventListener("click", () => {
 // ==========================================
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxceyCSsZdeMXnhNOB8nkdYFuS0JU2R_QLViBuvjgHruCVjK1YpitMdqHemF44CKGzV/exec";
 
+function parseCloudDate(dateStr) {
+    if (!dateStr) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+let saveDataTimeout = null;
+
 function saveData() {
+    if (saveDataTimeout) {
+        clearTimeout(saveDataTimeout);
+    }
+    
+    // Capture state.captchaToken at the time of database update triggers.
+    // Clean it up immediately to avoid reuse.
+    const token = state.captchaToken;
+    state.captchaToken = null;
+    
+    saveDataTimeout = setTimeout(() => {
+        executeSaveData(token);
+    }, 100);
+}
+
+function executeSaveData(captchaToken) {
+    const mappedSessions = db.sessions.list().map(s => {
+        return {
+            Session_ID: s.Session_ID,
+            Trainer_ID: s.Trainer_ID,
+            Date: s.Date,
+            Time: s.Start_Time && s.End_Time ? `${s.Start_Time} - ${s.End_Time}` : "",
+            Capacity: s.Max_Capacity !== undefined ? s.Max_Capacity : 1,
+            Booked_Count: db.bookings.list().filter(b => b.Session_ID === s.Session_ID && b.Status === "Confirmed").length,
+            Status: s.Status
+        };
+    });
+
+    const mappedBookings = db.bookings.list().map(b => {
+        return {
+            Booking_ID: b.Booking_ID,
+            Student_ID: b.Student_ID,
+            Session_ID: b.Session_ID,
+            Booking_Time: b.Booking_Date || "",
+            Status: b.Status
+        };
+    });
+
+    const mappedPackages = db.packages.list().map(p => {
+        return {
+            Student_ID: p.Student_ID,
+            Package_Name: p.Package_ID || "",
+            Total_Credits: p.Total_Slots !== undefined ? p.Total_Slots : 0,
+            Remaining_Credits: p.Remaining_Slots !== undefined ? p.Remaining_Slots : 0,
+            Expiry_Date: ""
+        };
+    });
+
     const allData = {
         action: "saveData",
+        captchaToken: captchaToken || "",
         payload: {
             users: db.users.list().map(u => ({
                 ...u,
                 Username: u.Username || u.Email || ""
             })),
-            sessions: db.sessions.list(),
-            bookings: db.bookings.list(),
-            studentPackages: db.packages.list()
+            sessions: mappedSessions,
+            bookings: mappedBookings,
+            studentPackages: mappedPackages
         }
     };
 
@@ -3101,10 +3325,25 @@ function saveData() {
     })
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
-            console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.error) {
+                showToast(data.error, "error");
+                // Roll back local changes by reloading fresh state from the cloud
+                window.loadDataFromCloud().then(() => {
+                    renderCurrentView();
+                });
+            } else {
+                console.log("บันทึกข้อมูลซิงค์ลง Google Sheets สำเร็จ");
+            }
         })
         .catch(error => {
             console.error("เกิดข้อผิดพลาดในการซิงค์ฐานข้อมูล:", error);
+            showToast(state.language === "zh-tw" ? "同步雲端資料庫失敗，正在載入舊資料..." : "Failed to sync database. Reloading cloud data...", "error");
+            window.loadDataFromCloud().then(() => {
+                renderCurrentView();
+            });
         });
 }
 
@@ -3128,13 +3367,54 @@ window.loadDataFromCloud = function () {
                     db.users.save(mappedUsers);
                 }
                 if (data.sessions && Object.keys(data.sessions).length > 0) {
-                    db.sessions.save(data.sessions);
+                    const mappedSessions = data.sessions.map(s => {
+                        let startTime = "09:00";
+                        let endTime = "10:00";
+                        if (s.Time && s.Time.includes(" - ")) {
+                            const parts = s.Time.split(" - ");
+                            startTime = parts[0] || "09:00";
+                            endTime = parts[1] || "10:00";
+                        }
+                        const capacity = parseInt(s.Capacity);
+                        const maxCapacity = isNaN(capacity) ? 1 : capacity;
+                        return {
+                            Session_ID: s.Session_ID,
+                            Trainer_ID: s.Trainer_ID,
+                            Class_Type: maxCapacity === 1 ? "1 on 1" : "Group Class",
+                            Max_Capacity: maxCapacity,
+                            Date: parseCloudDate(s.Date),
+                            Start_Time: startTime,
+                            End_Time: endTime,
+                            Status: s.Status || "Available"
+                        };
+                    });
+                    db.sessions.save(mappedSessions);
                 }
                 if (data.bookings && Object.keys(data.bookings).length > 0) {
-                    db.bookings.save(data.bookings);
+                    const mappedBookings = data.bookings.map(b => {
+                        return {
+                            Booking_ID: b.Booking_ID,
+                            Session_ID: b.Session_ID,
+                            Student_ID: b.Student_ID,
+                            Booking_Date: b.Booking_Time || "",
+                            Status: b.Status || "Confirmed"
+                        };
+                    });
+                    db.bookings.save(mappedBookings);
                 }
                 if (data.studentPackages && Object.keys(data.studentPackages).length > 0) {
-                    db.packages.save(data.studentPackages);
+                    const mappedPackages = data.studentPackages.map(p => {
+                        const existingPkg = db.packages.list().find(ep => ep.Student_ID === p.Student_ID);
+                        return {
+                            Package_ID: p.Package_Name || ("P_" + p.Student_ID),
+                            Student_ID: p.Student_ID,
+                            Total_Slots: parseInt(p.Total_Credits) || 0,
+                            Remaining_Slots: parseInt(p.Remaining_Credits) || 0,
+                            Group_Total_Slots: existingPkg ? (existingPkg.Group_Total_Slots || 0) : 0,
+                            Group_Remaining_Slots: existingPkg ? (existingPkg.Group_Remaining_Slots || 0) : 0
+                        };
+                    });
+                    db.packages.save(mappedPackages);
                 }
 
                 console.log("ดาวน์โหลดข้อมูลฐานข้อมูลล่าสุดเรียบร้อย");
