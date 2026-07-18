@@ -1604,7 +1604,7 @@ window.bookSessionAction = function (sessionId) {
     if (state.turnstileWidgetId !== undefined && window.turnstile) {
         try {
             turnstile.remove(state.turnstileWidgetId);
-        } catch (e) {}
+        } catch (e) { }
         state.turnstileWidgetId = undefined;
     }
     state.captchaToken = null;
@@ -1656,7 +1656,7 @@ window.bookSessionAction = function (sessionId) {
         if (state.turnstileWidgetId !== undefined && window.turnstile) {
             try {
                 turnstile.remove(state.turnstileWidgetId);
-            } catch (e) {}
+            } catch (e) { }
             state.turnstileWidgetId = undefined;
         }
         state.captchaToken = null;
@@ -2674,7 +2674,7 @@ document.getElementById("form-buy-package").addEventListener("submit", (e) => {
     const studentUser = db.users.get(state.currentStudentId);
     const studentName = studentUser ? studentUser.Name : "Student";
     const creditTypeLabel = type === "pt" ? "1-on-1 PT Credits" : "Group Class Credits";
-    
+
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         headers: {
@@ -3239,7 +3239,7 @@ document.getElementById("btn-add-class-type").addEventListener("click", () => {
 // ==========================================
 // 12. GOOGLE SHEETS CLOUD SYNC
 // ==========================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxceyCSsZdeMXnhNOB8nkdYFuS0JU2R_QLViBuvjgHruCVjK1YpitMdqHemF44CKGzV/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwATuSyJgoy5maKiC--Aq00qaXCcOE2ImD1YFMNDPMbhiDIF-fUWmc8n4AgYo4hlGGS/exec";
 
 function parseCloudDate(dateStr) {
     if (!dateStr) return "";
@@ -3258,12 +3258,12 @@ function saveData() {
     if (saveDataTimeout) {
         clearTimeout(saveDataTimeout);
     }
-    
+
     // Capture state.captchaToken at the time of database update triggers.
     // Clean it up immediately to avoid reuse.
     const token = state.captchaToken;
     state.captchaToken = null;
-    
+
     saveDataTimeout = setTimeout(() => {
         executeSaveData(token);
     }, 100);
